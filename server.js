@@ -127,10 +127,6 @@ socket.on("responderEstado", (dados) => {
     io.to(dados.destino).emit("estadoAtualizado", dados.estado);
 });
 
-socket.on("somComer", (dados) => {
-    io.to(dados.sala).emit("somComer");
-});
-
     socket.on("disconnect", () => {
         console.log("Jogador saiu:", socket.id);
     });
