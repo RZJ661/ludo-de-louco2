@@ -140,10 +140,10 @@ if (nickExiste) {
             return;
         }
 
-        if (sala.jogadores.length < 4) {
-            socket.emit("erroSala", "Precisa de 4 jogadores para iniciar!");
-            return;
-        }
+        if (sala.jogadores.length < 1) {
+    socket.emit("erroSala", "Precisa de pelo menos 1 jogador!");
+    return;
+}
 
         sala.partidaIniciada = true;
         io.to(codigo).emit("partidaIniciada");

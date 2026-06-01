@@ -1749,24 +1749,23 @@ function atualizarPainelSala(jogadores) {
     if (souHost) {
         btnIniciarPartida.style.display = "block";
 
-        if (jogadores.length >= 4) {
-            btnIniciarPartida.disabled = false;
-            btnIniciarPartida.textContent = "Iniciar Partida";
-        } else {
-            btnIniciarPartida.disabled = true;
-            btnIniciarPartida.textContent = `Aguardando ${4 - jogadores.length} jogador(es)`;
-        }
+       btnIniciarPartida.disabled = false;
+
+if (jogadores.length === 1) {
+    btnIniciarPartida.textContent = "🎮 Iniciar Teste";
+} else {
+    btnIniciarPartida.textContent = "🎮 Iniciar Partida";
+}
     }
 }
 
 btnIniciarPartida.addEventListener("click", () => {
     if (!souHost) return;
 
-    if (jogadoresDaSala.length < 4) {
-        mostrarAviso("🚫 Precisa de 4 jogadores para iniciar!");
-        return;
-    }
-
+    if (jogadoresDaSala.length < 1) {
+    mostrarAviso("🚫 Precisa de pelo menos 1 jogador!");
+    return;
+}
     socket.emit("iniciarPartida", salaAtual);
 });
 
