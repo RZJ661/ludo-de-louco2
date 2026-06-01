@@ -115,6 +115,10 @@ socket.on("pecaMovendo", (dados) => {
     socket.to(dados.sala).emit("pecaMovendo", dados);
 });
 
+socket.on("somComer", (dados) => {
+    io.to(dados.sala).emit("somComer");
+});
+
 socket.on("pedirEstado", (sala) => {
     socket.to(sala).emit("alguemPediuEstado", socket.id);
 });
