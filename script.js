@@ -1923,6 +1923,16 @@ if (btnSyncOnline) {
     });
 }
 
+socket.on("hostAtualizado", (novoHostId) => {
+    souHost = socket.id === novoHostId;
+
+    atualizarPainelSala(jogadoresDaSala);
+
+    if (souHost) {
+        mostrarAviso("👑 Você virou o novo líder da sala!");
+    }
+});
+
 window.addEventListener("load", () => {
     const salaSalva = localStorage.getItem("ludoSalaAtual");
     const nickSalvo = localStorage.getItem("ludoNick");
