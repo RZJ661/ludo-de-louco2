@@ -37,10 +37,11 @@ io.on("connection", (socket) => {
     socket.join(dados.codigo);
 
     socket.emit("entrouSala", {
-        codigo: dados.codigo,
-        jogador: dados.jogador,
-        jogadores: sala.jogadores
-    });
+    codigo: dados.codigo,
+    jogador: dados.jogador,
+    jogadores: sala.jogadores,
+    host: sala.host === socket.id
+});
 
     io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
 

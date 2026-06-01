@@ -1639,6 +1639,7 @@ salaAtual = campoCodigo.value.trim().toUpperCase();
 function aplicarDadosOnline(dados) {
     salaAtual = dados.codigo;
     meuJogador = dados.jogador;
+    souHost = dados.host === true || meuJogador === 0;
     localStorage.setItem("ludoSalaAtual", salaAtual);
 localStorage.setItem("ludoNick", meuNick);
 localStorage.setItem("ludoAvatar", meuAvatar);
