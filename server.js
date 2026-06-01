@@ -115,13 +115,21 @@ socket.on("pecaMovendo", (dados) => {
     socket.to(dados.sala).emit("pecaMovendo", dados);
 });
 
+socket.on("pedirEstado", (sala) => {
+    socket.to(sala).emit("alguemPediuEstado", socket.id);
+});
+
+socket.on("responderEstado", (dados) => {
+    io.to(dados.destino).emit("estadoAtualizado", dados.estado);
+});
+
     socket.on("disconnect", () => {
         console.log("Jogador saiu:", socket.id);
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
