@@ -13,6 +13,40 @@ const salas = {};
 io.on("connection", (socket) => {
     console.log("Jogador conectado:", socket.id);
 
+    socket.on("reconectarSala", (dados) => {
+    const sala = salas[dados.codigo];
+
+    if (!sala) {
+        socket.emit("erroSala", "Sala não existe mais!");
+        return;
+    }
+
+    const jogadorAntigo = sala.jogadores[dados.jogador];
+
+    if (!jogadorAntigo) {
+        socket.emit("erroSala", "Jogador não encontrado nessa sala!");
+        return;
+    }
+
+    sala.jogadores[dados.jogador] = {
+        id: socket.id,
+        nick: dados.nick,
+        avatar: dados.avatar
+    };
+
+    socket.join(dados.codigo);
+
+    socket.emit("entrouSala", {
+        codigo: dados.codigo,
+        jogador: dados.jogador,
+        jogadores: sala.jogadores
+    });
+
+    io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
+
+    socket.to(dados.codigo).emit("alguemPediuEstado", socket.id);
+});
+
     socket.on("criarSala", (dados) => {
         const codigo = dados.codigo;
 

@@ -1639,6 +1639,10 @@ salaAtual = campoCodigo.value.trim().toUpperCase();
 function aplicarDadosOnline(dados) {
     salaAtual = dados.codigo;
     meuJogador = dados.jogador;
+    localStorage.setItem("ludoSalaAtual", salaAtual);
+localStorage.setItem("ludoNick", meuNick);
+localStorage.setItem("ludoAvatar", meuAvatar);
+localStorage.setItem("ludoJogador", meuJogador);
     jogadoresDaSala = dados.jogadores;
 
 console.log("MEU JOGADOR:", meuJogador);
@@ -1892,6 +1896,19 @@ if (btnSyncOnline) {
     });
 }
 
-// teste github desktop
-// teste github desktop
+window.addEventListener("load", () => {
+    const salaSalva = localStorage.getItem("ludoSalaAtual");
+    const nickSalvo = localStorage.getItem("ludoNick");
+    const avatarSalvo = localStorage.getItem("ludoAvatar");
+    const jogadorSalvo = localStorage.getItem("ludoJogador");
+
+    if (!salaSalva || jogadorSalvo === null) return;
+
+    socket.emit("reconectarSala", {
+        codigo: salaSalva,
+        nick: nickSalvo,
+        avatar: avatarSalvo,
+        jogador: Number(jogadorSalvo)
+    });
+});
 

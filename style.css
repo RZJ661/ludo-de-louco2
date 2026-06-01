@@ -1,15 +1,16 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background: #0b3a35;
+    background:
+        radial-gradient(circle at top,
+            #22c1c3 0%,
+            #0f766e 35%,
+            #083344 100%
+        );
     color: white;
     margin: 0;
     padding: 20px;
-}
-
-h1 {
-    margin-bottom: 15px;
-    text-shadow: 0 0 12px rgba(255,255,255,0.5);
+    min-height: 100vh;
 }
 
 #area-jogo {
@@ -28,13 +29,25 @@ h1 {
     grid-template-columns: repeat(15, 42px);
     grid-template-rows: repeat(15, 42px);
     gap: 2px;
-    background: #1e2a2a;
+
     padding: 22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #2f2f2f,
+            #1a1a1a
+        );
+
     border: 28px solid #8d5f2e;
     border-radius: 28px;
+
     margin: 20px auto;
     width: fit-content;
-    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+
+    box-shadow:
+        0 0 60px rgba(0,0,0,.8),
+        inset 0 0 25px rgba(255,255,255,.08);
 }
 
 .casa {
@@ -108,10 +121,37 @@ h1 {
     transition: none;
 }
 
-.vermelho { background: #b8140f; }
-.azul { background: #0067c9; }
-.verde { background: #0aa82f; }
-.amarelo { background: #e0a800; }
+.vermelho {
+    background:
+    radial-gradient(circle at 30% 30%,
+    #ffffff,
+    #ff5a5a 18%,
+    #b8140f 85%);
+}
+
+.azul {
+    background:
+    radial-gradient(circle at 30% 30%,
+    #ffffff,
+    #4aa3ff 18%,
+    #0067c9 85%);
+}
+
+.verde {
+    background:
+    radial-gradient(circle at 30% 30%,
+    #ffffff,
+    #42e36a 18%,
+    #0aa82f 85%);
+}
+
+.amarelo {
+    background:
+    radial-gradient(circle at 30% 30%,
+    #ffffff,
+    #ffe45e 18%,
+    #e0a800 85%);
+}
 
 .peca.andando {
     animation: pulinhoPeca 0.28s ease;
