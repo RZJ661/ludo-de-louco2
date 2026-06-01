@@ -1788,3 +1788,42 @@ socket.on("pecaMovendo", async (dados) => {
         estadoPendenteOnline = null;
     }
 });
+
+function estadoAtualCompleto() {
+    return {
+        sala: salaAtual,
+        jogadorAtual,
+        progresso,
+        golsFeitos,
+        ranking,
+        jogadoresFinalizados,
+        dadosPendentes,
+        bonusGiros,
+        seisSeguidos
+    };
+}
+
+socket.on("alguemPediuEstado", (destino) => {
+    if (!salaAtual) return;
+
+    socket.emit("responderEstado", {
+        destino,
+        estado: estadoAtualCompleto()
+    });
+});
+
+function pedirResyncOnline() {
+    if (!salaAtual) {
+        mostrarAviso("Você não está em uma sala!");
+        return;
+    }
+
+    mostrarAviso("🔄 Sincronizando com a sala...");
+    socket.emit("pedirEstado", salaAtual);
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") {
+        pedirResyncOnline();
+    }
+});
