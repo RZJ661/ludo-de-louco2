@@ -450,14 +450,6 @@ box-shadow: none;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.dado-card::after {
-    content: "👆";
-    position: absolute;
-    transform: translateX(58px);
-    font-size: 28px;
-    filter: drop-shadow(0 3px 3px rgba(0,0,0,0.6));
-}
-
 .avatar-jogador {
     order: 3;
 
