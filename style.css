@@ -344,16 +344,16 @@ box-shadow: none;
     content: "";
     position: absolute;
 
-    width: 110px;
-    height: 110px;
+    width: 80px;
+    height: 80px;
 
     background-image: url("assets/homer.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 
-    right: -55px;
-    top: -20px;
+    right: -85px;
+    top: 10px;
 
     animation: homerAponta 0.45s infinite alternate;
     pointer-events: none;
