@@ -1877,3 +1877,21 @@ document.addEventListener("keydown", (e) => {
 socket.on("somComer", () => {
     tocarSomAleatorio(sonsComer);
 });
+
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && salaAtual) {
+        pedirResyncOnline();
+    }
+});
+
+const btnSyncOnline = document.getElementById("btn-sync-online");
+
+if (btnSyncOnline) {
+    btnSyncOnline.addEventListener("click", () => {
+        pedirResyncOnline();
+    });
+}
+
+// teste github desktop
+// teste github desktop
+
