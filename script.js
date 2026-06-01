@@ -705,12 +705,15 @@ async function moverPeca(jogador, pecaIndex, passos) {
     if (progresso[jogador][pecaIndex] === GOL) {
 
         if (!golsFeitos[jogador].every(g => g === true)) {
-    if (salaAtual) {
-    socket.emit("somComer", {
-        sala: salaAtual
-    });
-} else {
-    tocarSomAleatorio(sonsComer);
+    if (progresso[jogador][pecaIndex] === GOL) {
+
+    if (!golsFeitos[jogador].every(g => g === true)) {
+
+        tocarSomAleatorio(sonsGol);
+
+        renderizarPeca(jogador, pecaIndex);
+        info.textContent = `⚽ GOL do ${nomes[jogador]}!`;
+    }
 }
 }
 
