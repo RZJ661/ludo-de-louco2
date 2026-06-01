@@ -703,7 +703,13 @@ async function moverPeca(jogador, pecaIndex, passos) {
     if (progresso[jogador][pecaIndex] === GOL) {
 
         if (!golsFeitos[jogador].every(g => g === true)) {
-    tocarSomAleatorio(sonsGol);
+    if (salaAtual) {
+    socket.emit("somComer", {
+        sala: salaAtual
+    });
+} else {
+    tocarSomAleatorio(sonsComer);
+}
 }
 
         tocarSomAleatorio(sonsGol);
@@ -921,6 +927,12 @@ function verificarCaptura(jogador, pecaIndex) {
     mandarParaBase(outroJogador, outraPeca);
     capturou = true;
     tocarSomAleatorio(sonsComer);
+
+    if (salaAtual) {
+    socket.emit("somComer", {
+        sala: salaAtual
+    });
+}
 
     const mensagensComeu = [
     `👀 OLOKO, me comeu?!`,
@@ -1826,4 +1838,8 @@ document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") {
         pedirResyncOnline();
     }
+});
+
+socket.on("somComer", () => {
+    tocarSomAleatorio(sonsComer);
 });
