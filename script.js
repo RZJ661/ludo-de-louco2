@@ -1397,10 +1397,10 @@ function atualizarPainel() {
         card.classList.remove("ativo");
     });
 
-    const cardAtivo = document.querySelector(`.card-jogador[data-jogador="${jogadorAtual}"]`);
-    if (cardAtivo) {
-        cardAtivo.classList.add("ativo");
-    }
+    document.querySelectorAll(".card-jogador").forEach(card => {
+    card.classList.remove("ativo");
+    card.classList.remove("aguardando-dado");
+});
 
     painelJogador.classList.remove(
         "painel-vermelho",
@@ -1410,6 +1410,15 @@ function atualizarPainel() {
     );
 
     painelJogador.classList.add(classesPainel[jogadorAtual]);
+
+    const cardAtivo = document.querySelector(
+    `.card-jogador[data-jogador="${jogadorAtual}"]`
+);
+
+if (cardAtivo) {
+    cardAtivo.classList.add("ativo");
+    cardAtivo.classList.add("aguardando-dado");
+}
 
     if (dadosPendentes.length === 0) {
         dadosAcumuladosTexto.textContent = "Dados: -";

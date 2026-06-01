@@ -340,6 +340,35 @@ box-shadow: none;
     animation: girarDado 0.45s linear infinite;
 }
 
+.card-jogador.aguardando-dado .dado-card::after {
+    content: "";
+    position: absolute;
+
+    width: 110px;
+    height: 110px;
+
+    background-image: url("assets/homer.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    right: -95px;
+    top: -20px;
+
+    animation: homerAponta 0.45s infinite alternate;
+
+    pointer-events: none;
+}
+
+@keyframes homerAponta {
+    from {
+        transform: translateX(0px);
+    }
+
+    to {
+        transform: translateX(-12px);
+    }
+}
+
 @keyframes girarDado {
     from { transform: rotate(0deg) scale(1); }
     to { transform: rotate(360deg) scale(1.08); }
