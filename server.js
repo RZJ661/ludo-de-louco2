@@ -1,0 +1,127 @@
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.use(express.static(__dirname));
+
+const salas = {};
+
+io.on("connection", (socket) => {
+    console.log("Jogador conectado:", socket.id);
+
+    socket.on("criarSala", (dados) => {
+        const codigo = dados.codigo;
+
+        if (salas[codigo]) {
+            socket.emit("erroSala", "Essa sala já existe!");
+            return;
+        }
+
+        salas[codigo] = {
+            host: socket.id,
+            jogadores: [
+                {
+                    id: socket.id,
+                    nick: dados.nick,
+                    avatar: dados.avatar
+                }
+            ]
+        };
+
+        socket.join(codigo);
+
+        socket.emit("salaCriada", {
+            codigo,
+            jogador: 0,
+            jogadores: salas[codigo].jogadores
+        });
+
+        io.to(codigo).emit(
+            "jogadoresAtualizados",
+            salas[codigo].jogadores
+        );
+
+        console.log("Sala criada:", codigo);
+    });
+
+    socket.on("entrarSala", (dados) => {
+        const codigo = dados.codigo;
+
+        if (!salas[codigo]) {
+            socket.emit("erroSala", "Sala não existe!");
+            return;
+        }
+
+        if (salas[codigo].jogadores.length >= 4) {
+            socket.emit("erroSala", "Sala cheia!");
+            return;
+        }
+
+        const numeroJogador = salas[codigo].jogadores.length;
+
+        salas[codigo].jogadores.push({
+            id: socket.id,
+            nick: dados.nick,
+            avatar: dados.avatar
+        });
+
+        socket.join(codigo);
+
+        socket.emit("entrouSala", {
+            codigo,
+            jogador: numeroJogador,
+            jogadores: salas[codigo].jogadores
+        });
+
+        io.to(codigo).emit(
+            "jogadoresAtualizados",
+            salas[codigo].jogadores
+        );
+
+        console.log("Jogador entrou na sala:", codigo);
+    });
+
+    socket.on("iniciarPartida", (codigo) => {
+        const sala = salas[codigo];
+
+        if (!sala) return;
+
+        if (sala.host !== socket.id) {
+            socket.emit("erroSala", "Só o host pode iniciar a partida!");
+            return;
+        }
+
+        if (sala.jogadores.length < 4) {
+            socket.emit("erroSala", "Precisa de 4 jogadores para iniciar!");
+            return;
+        }
+
+        io.to(codigo).emit("partidaIniciada");
+    });
+
+    socket.on("sincronizarEstado", (estado) => {
+        socket.to(estado.sala).emit("estadoAtualizado", estado);
+    });
+
+    socket.on("dadoRolado", (dados) => {
+    socket.to(dados.sala).emit("dadoRolado", dados);
+});
+
+socket.on("pecaMovendo", (dados) => {
+    socket.to(dados.sala).emit("pecaMovendo", dados);
+});
+
+    socket.on("disconnect", () => {
+        console.log("Jogador saiu:", socket.id);
+    });
+});
+
+const PORT = 3000;
+
+server.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});

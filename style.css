@@ -1,0 +1,575 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #0b3a35;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 15px;
+    text-shadow: 0 0 12px rgba(255,255,255,0.5);
+}
+
+#area-jogo {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+#tabuleiro {
+    display: grid;
+    grid-template-columns: repeat(15, 42px);
+    grid-template-rows: repeat(15, 42px);
+    gap: 2px;
+    background: #1e2a2a;
+    padding: 22px;
+    border: 28px solid #8d5f2e;
+    border-radius: 28px;
+    margin: 20px auto;
+    width: fit-content;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+}
+
+.casa {
+    width: 42px;
+    height: 42px;
+    background: #f0e6c8;
+    border-radius: 4px;
+    position: relative;
+    box-sizing: border-box;
+    font-weight: bold;
+}
+
+.vermelho-area { background: #e74c3c !important; }
+.azul-area { background: #2f80df !important; }
+.verde-area { background: #2ecc71 !important; }
+.amarelo-area { background: #f1c40f !important; }
+
+.caminho { background: #f0e6c8 !important; }
+
+.vermelho-entrada { background: #e74c3c !important; }
+.azul-entrada { background: #2f80df !important; }
+.verde-entrada { background: #2ecc71 !important; }
+.amarelo-entrada { background: #f1c40f !important; }
+
+.centro-vermelho { background: #e74c3c !important; }
+.centro-azul { background: #2f80df !important; }
+.centro-verde { background: #2ecc71 !important; }
+.centro-amarelo { background: #f1c40f !important; }
+
+.centro-meio {
+    background: #d7d7d7 !important;
+    color: #333;
+    font-size: 24px;
+}
+
+.segura::after {
+    content: "★";
+    color: rgba(0,0,0,0.8);
+    font-size: 24px;
+}
+
+.seta {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.peca {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    min-width: 32px;
+    min-height: 32px;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7), inset 0 0 10px rgba(255,255,255,0.5);
+    cursor: pointer;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    transform: translate(
+        calc(-50% + var(--px, 0px)),
+        calc(-50% + var(--py, 0px))
+    );
+
+    z-index: 5;
+    transition: none;
+}
+
+.vermelho { background: #b8140f; }
+.azul { background: #0067c9; }
+.verde { background: #0aa82f; }
+.amarelo { background: #e0a800; }
+
+.peca.andando {
+    animation: pulinhoPeca 0.28s ease;
+}
+
+@keyframes pulinhoPeca {
+    0% {
+        transform: translate(
+            calc(-50% + var(--px, 0px)),
+            calc(-50% + var(--py, 0px))
+        ) scale(1);
+    }
+
+    50% {
+        transform: translate(
+            calc(-50% + var(--px, 0px)),
+            calc(-50% + var(--py, 0px) - 8px)
+        ) scale(1.15);
+    }
+
+    100% {
+        transform: translate(
+            calc(-50% + var(--px, 0px)),
+            calc(-50% + var(--py, 0px))
+        ) scale(1);
+    }
+}
+
+.coluna-players {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.card-jogador {
+    width: 220px;
+    min-height: 230px;
+
+    background: rgba(0,0,0,0.45);
+    border: 4px solid white;
+    border-radius: 20px;
+    padding: 14px;
+
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    column-gap: 12px;
+    row-gap: 7px;
+
+    align-items: center;
+    justify-items: center;
+
+    box-sizing: border-box;
+}
+
+.card-jogador.ativo {
+    transform: scale(1.04);
+    box-shadow:
+        0 0 22px currentColor,
+        0 0 45px rgba(255,255,255,0.25);
+}
+
+.avatar-jogador {
+    grid-column: 1;
+    grid-row: 1 / 3;
+
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+}
+
+.dado-card {
+    grid-column: 2;
+    grid-row: 1 / 3;
+
+    width: 82px;
+    height: 82px;
+
+    border-radius: 16px;
+    border: 3px solid #ddd;
+    background: linear-gradient(145deg, #ffffff, #dcdcdc);
+
+    font-size: 34px;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.9),
+        inset 0 -4px 8px rgba(0,0,0,0.25),
+        0 5px 12px rgba(0,0,0,0.65);
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dado-card:hover {
+    transform: scale(1.05);
+}
+
+.dado-card:active {
+    transform: scale(0.92) rotate(10deg);
+}
+
+.dado-card.rolando {
+    animation: girarDado 0.45s linear infinite;
+}
+
+@keyframes girarDado {
+    from { transform: rotate(0deg) scale(1); }
+    to { transform: rotate(360deg) scale(1.08); }
+}
+
+.dado-3d {
+    font-size: 58px;
+    line-height: 1;
+}
+
+.nome-card {
+    grid-column: 1 / 3;
+    grid-row: 3;
+
+    font-size: 19px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.status-card {
+    grid-column: 1 / 3;
+    grid-row: 4;
+
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 0.9;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.dados-card {
+    grid-column: 1 / 3;
+    grid-row: 5;
+
+    width: 100%;
+    min-height: 40px;
+
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.25;
+
+    white-space: normal;
+    word-break: break-word;
+}
+
+.timer-afk-card {
+    grid-column: 1 / 3;
+    grid-row: 6;
+
+    width: 100%;
+    min-height: 28px;
+
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+
+    color: #00ff88;
+    text-shadow: 0 0 8px #00ff88;
+}
+
+.timer-afk-card.perigo {
+    color: #ff4444;
+    text-shadow:
+        0 0 8px #ff4444,
+        0 0 16px red;
+}
+
+#turno,
+#info {
+    margin: 8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#resultado {
+    display: none;
+}
+
+.controles {
+    margin-top: 10px;
+}
+
+#btn-adm {
+    margin-top: 12px;
+    padding: 8px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    display: none;
+}
+
+#painel-adm {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 100vh;
+
+    background: rgba(0,0,0,0.92);
+    color: white;
+
+    z-index: 99999;
+    padding: 20px;
+    box-sizing: border-box;
+
+    overflow-y: auto;
+    border-left: 3px solid white;
+}
+
+#painel-adm h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#painel-adm button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+
+    border-radius: 8px;
+    border: none;
+
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#fechar-adm {
+    background: #c0392b;
+    color: white;
+}
+
+#toast-jogo {
+    position: fixed;
+    top: 22px;
+    left: 50%;
+
+    transform: translateX(-50%) translateY(-20px);
+
+    background: rgba(0,0,0,0.88);
+    color: white;
+
+    padding: 14px 22px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.35);
+
+    font-size: 17px;
+    font-weight: bold;
+
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+
+    box-shadow: 0 8px 28px rgba(0,0,0,0.65);
+    transition: 0.25s ease;
+}
+
+#toast-jogo.mostrar {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+#tela-final {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+#caixa-final {
+    background: #1b1b1b;
+    padding: 30px;
+    border-radius: 20px;
+    min-width: 450px;
+
+    text-align: center;
+
+    border: 3px solid gold;
+    box-shadow: 0 0 25px gold;
+}
+
+#caixa-final h2 {
+    color: gold;
+    margin-bottom: 20px;
+}
+
+#campeao-final {
+    font-size: 32px;
+    font-weight: bold;
+    color: gold;
+
+    text-shadow:
+        0 0 10px gold,
+        0 0 20px gold,
+        0 0 30px orange;
+
+    margin-bottom: 15px;
+}
+
+#frase-final {
+    font-size: 18px;
+    font-style: italic;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+#ranking-final {
+    margin: 20px 0;
+    font-size: 22px;
+    line-height: 40px;
+}
+
+#botoes-pronto-final {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#botoes-pronto-final button {
+    padding: 12px;
+
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#contador-prontos {
+    margin-top: 15px;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    color: lime;
+}
+
+#confetes {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@media (max-width: 1050px) {
+    #area-jogo {
+        flex-direction: column;
+    }
+
+    .coluna-players {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card-jogador {
+        width: 220px;
+    }
+}
+
+#tela-lobby{
+    position:fixed;
+    inset:0;
+
+    background:#0b3a35;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:999999;
+}
+
+.caixa-lobby{
+    width:420px;
+
+    background:rgba(0,0,0,.5);
+
+    padding:30px;
+
+    border-radius:20px;
+
+    border:3px solid white;
+
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+
+    text-align:center;
+}
+
+.caixa-lobby input,
+.caixa-lobby select{
+    padding:12px;
+    font-size:18px;
+    border-radius:10px;
+    border:none;
+}
+
+.caixa-lobby button{
+    padding:12px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+}
+
+#painel-sala {
+    margin-top: 15px;
+}
+
+#lista-jogadores-online {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.jogador-online {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 10px;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#btn-iniciar-partida:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

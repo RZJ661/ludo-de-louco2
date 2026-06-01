@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo De Loucos 🎲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Ludo De Loucos 🎲</h1>
+
+    <div id="tela-lobby">
+
+    <div class="caixa-lobby">
+
+        <h2>🎲 Ludo de Loucos Online</h2>
+
+        <input
+            type="text"
+            id="nick"
+            placeholder="Digite seu nick"
+            maxlength="20"
+        >
+
+        <select id="avatar">
+            <option value="😎">😎</option>
+            <option value="🤡">🤡</option>
+            <option value="👑">👑</option>
+            <option value="🔥">🔥</option>
+            <option value="🐂">🐂</option>
+            <option value="💀">💀</option>
+            <option value="🚀">🚀</option>
+            <option value="🎮">🎮</option>
+        </select>
+
+        <button id="btn-criar-sala">
+            Criar Sala
+        </button>
+
+        <hr>
+
+        <input
+    type="text"
+    id="codigo-sala"
+    placeholder="Código da sala"
+>
+
+       <button id="btn-entrar-sala">
+             Entrar Sala
+ </button>
+
+ <div id="painel-sala" style="display:none;">
+     <hr>
+     <h3>🌎 Sala: <span id="codigo-sala-online">----</span></h3>
+     <p id="contador-jogadores-online">Jogadores: 0/4</p>
+
+     <div id="lista-jogadores-online"></div>
+
+<button id="btn-iniciar-partida" style="display:none;">
+     Iniciar Partida
+    </button>
+ </div>
+
+    </div>
+
+</div>
+
+    <div id="toast-jogo"></div>
+
+    <div id="painel-adm">
+        <h2>🎮 MODO ADM ON</h2>
+
+        <button id="fechar-adm">X Fechar</button>
+
+        <h3>🎲 Dados</h3>
+        <button class="adm-forcar-dado" data-valor="1">Forçar 1</button>
+        <button class="adm-forcar-dado" data-valor="2">Forçar 2</button>
+        <button class="adm-forcar-dado" data-valor="3">Forçar 3</button>
+        <button class="adm-forcar-dado" data-valor="4">Forçar 4</button>
+        <button class="adm-forcar-dado" data-valor="5">Forçar 5</button>
+        <button class="adm-forcar-dado" data-valor="6">Forçar 6</button>
+
+        <h3>🔄 Turnos</h3>
+        <button id="adm-proximo-turno">Próximo turno</button>
+        <button id="adm-turno-anterior">Turno anterior</button>
+        <button class="adm-virar-jogador" data-jogador="0">Virar Vermelho</button>
+        <button class="adm-virar-jogador" data-jogador="1">Virar Azul</button>
+        <button class="adm-virar-jogador" data-jogador="2">Virar Amarelo</button>
+        <button class="adm-virar-jogador" data-jogador="3">Virar Verde</button>
+
+        <h3>👑 Peças</h3>
+        <button id="adm-mandar-gol">Mandar peça para o gol</button>
+
+        <h3>📊 Debug</h3>
+        <p>Jogador atual: <span id="adm-jogador-atual">-</span></p>
+        <p>Dados: <span id="adm-dados">-</span></p>
+        <p>Bônus: <span id="adm-bonus">0</span></p>
+    </div>
+
+    <div id="area-jogo">
+
+        <div class="coluna-players esquerda">
+            <div class="card-jogador card-vermelho" data-jogador="0">
+                <div class="avatar-jogador">🔴</div>
+                <div class="nome-card">Vermelho</div>
+                <div class="status-card">Aguardando</div>
+                <div class="dados-card">Dados: -</div>
+                <div class="timer-afk-card"></div>
+
+                <button id="dado" class="dado-card" data-jogador="0">
+                    <span id="dado-visual" class="dado-3d">⚂</span>
+                </button>
+            </div>
+
+            <div class="card-jogador card-verde" data-jogador="3">
+                <div class="avatar-jogador">🟢</div>
+                <div class="nome-card">Verde</div>
+                <div class="status-card">Aguardando</div>
+                <div class="dados-card">Dados: -</div>
+                <div class="timer-afk-card"></div>
+
+                <button class="dado-card" data-jogador="3">
+                    <span class="dado-3d">⚂</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="tabuleiro"></div>
+
+        <div class="coluna-players direita">
+            <div class="card-jogador card-azul" data-jogador="1">
+                <div class="avatar-jogador">🔵</div>
+                <div class="nome-card">Azul</div>
+                <div class="status-card">Aguardando</div>
+                <div class="dados-card">Dados: -</div>
+                <div class="timer-afk-card"></div>
+
+                <button class="dado-card" data-jogador="1">
+                    <span class="dado-3d">⚂</span>
+                </button>
+            </div>
+
+            <div class="card-jogador card-amarelo" data-jogador="2">
+                <div class="avatar-jogador">🟡</div>
+                <div class="nome-card">Amarelo</div>
+                <div class="status-card">Aguardando</div>
+                <div class="dados-card">Dados: -</div>
+                <div class="timer-afk-card"></div>
+
+                <button class="dado-card" data-jogador="2">
+                    <span class="dado-3d">⚂</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="painel-jogador" style="display:none;">
+        <div id="dados-acumulados">Dados: -</div>
+        <div id="nick-jogador">Vermelho</div>
+    </div>
+
+    <div class="controles">
+        <p id="resultado"></p>
+        <p id="turno">Turno: <span id="jogador-atual">Vermelho</span></p>
+        <p id="info">Vez de Vermelho.</p>
+
+        <button id="btn-adm">
+            Modo ADM: OFF
+        </button>
+    </div>
+
+<div id="tela-final" style="display:none;">
+    <div id="caixa-final">
+        <h2>🏆 FIM DE PARTIDA</h2>
+        <div id="campeao-final"></div>
+<div id="frase-final"></div>
+<div id="hall-fama"></div>
+
+        <div id="ranking-final"></div>
+
+        <h3>🔄 Jogar novamente?</h3>
+
+        <div id="prontos-final"></div>
+
+        <div id="botoes-pronto-final">
+            <button data-jogador="0">Vermelho pronto</button>
+            <button data-jogador="1">Azul pronto</button>
+            <button data-jogador="2">Amarelo pronto</button>
+            <button data-jogador="3">Verde pronto</button>
+        </div>
+
+        <p id="contador-prontos">Prontos: 0/4</p>
+    </div>
+</div>
+<canvas id="confetes"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
