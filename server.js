@@ -92,6 +92,15 @@ io.on("connection", (socket) => {
             return;
         }
 
+        const nickExiste = salas[codigo].jogadores.some(j =>
+    j.nick.toLowerCase() === dados.nick.toLowerCase()
+);
+
+if (nickExiste) {
+    socket.emit("erroSala", "Esse nick já está em uso nessa sala!");
+    return;
+}
+
         if (salas[codigo].jogadores.length >= 4) {
             socket.emit("erroSala", "Sala cheia!");
             return;
