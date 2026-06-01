@@ -513,17 +513,19 @@ info.textContent = `${nomes[jogadorAtual]}, escolha uma peça. Tempo: 15s.`;
 function clicarNaPeca(jogador, pecaIndex) {
     if (animando) return;
 
+    // Online: clicou em peça de outra cor
     if (meuJogador !== null && jogador !== meuJogador) {
-    mostrarAviso("🚫 Essa peça não é sua no online!");
-    return;
-}
-
-    if (jogador !== jogadorAtual) {
         mostrarAviso(
-    mensagensPecaErrada[
-        Math.floor(Math.random() * mensagensPecaErrada.length)
-    ]
-);
+            mensagensPecaErrada[
+                Math.floor(Math.random() * mensagensPecaErrada.length)
+            ]
+        );
+        return;
+    }
+
+    // Online/offline: clicou na sua peça, mas não é sua vez
+    if (jogador !== jogadorAtual) {
+        mostrarAviso("⏳ Calma aí, emocionado! Ainda não é sua vez.");
         return;
     }
 
@@ -924,14 +926,15 @@ function verificarCaptura(jogador, pecaIndex) {
             const posicaoOutro = (indicesSaida[outroJogador] + progOutro) % caminho.length;
 
             if (posicaoOutro === posicaoGlobal) {
-    mandarParaBase(outroJogador, outraPeca);
-    capturou = true;
-    tocarSomAleatorio(sonsComer);
+   mandarParaBase(outroJogador, outraPeca);
+capturou = true;
 
-    if (salaAtual) {
+if (salaAtual) {
     socket.emit("somComer", {
         sala: salaAtual
     });
+} else {
+    tocarSomAleatorio(sonsComer);
 }
 
     const mensagensComeu = [
