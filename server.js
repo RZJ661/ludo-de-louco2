@@ -56,16 +56,17 @@ io.on("connection", (socket) => {
             return;
         }
 
-        salas[codigo] = {
-            host: socket.id,
-            jogadores: [
-                {
-                    id: socket.id,
-                    nick: dados.nick,
-                    avatar: dados.avatar
-                }
-            ]
-        };
+      salas[codigo] = {
+    host: socket.id,
+    partidaIniciada: false,
+    jogadores: [
+        {
+            id: socket.id,
+            nick: dados.nick,
+            avatar: dados.avatar
+        }
+    ]
+};
 
         socket.join(codigo);
 
@@ -135,6 +136,7 @@ io.on("connection", (socket) => {
             return;
         }
 
+        sala.partidaIniciada = true;
         io.to(codigo).emit("partidaIniciada");
     });
 
@@ -163,8 +165,41 @@ socket.on("responderEstado", (dados) => {
 });
 
     socket.on("disconnect", () => {
-        console.log("Jogador saiu:", socket.id);
-    });
+    console.log("Jogador saiu:", socket.id);
+
+    for (const codigo in salas) {
+        const sala = salas[codigo];
+
+        const index = sala.jogadores.findIndex(j => j.id === socket.id);
+
+        if (index === -1) continue;
+
+        if (sala.partidaIniciada) {
+            sala.jogadores[index].desconectado = true;
+
+            io.to(codigo).emit("jogadoresAtualizados", sala.jogadores);
+            return;
+        }
+
+        sala.jogadores.splice(index, 1);
+
+        if (sala.jogadores.length === 0) {
+            delete salas[codigo];
+            console.log("Sala apagada:", codigo);
+            return;
+        }
+
+        if (sala.host === socket.id) {
+            sala.host = sala.jogadores[0].id;
+            console.log("Novo host da sala", codigo, ":", sala.host);
+        }
+
+        io.to(codigo).emit("jogadoresAtualizados", sala.jogadores);
+        io.to(codigo).emit("hostAtualizado", sala.host);
+
+        return;
+    }
+});
 });
 
 const PORT = process.env.PORT || 3000;
