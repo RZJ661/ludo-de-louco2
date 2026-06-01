@@ -1704,6 +1704,23 @@ socket.on("jogadoresAtualizados", (jogadores) => {
 
 socket.on("erroSala", (msg) => {
     mostrarAviso(msg);
+
+    localStorage.removeItem("ludoSalaAtual");
+    localStorage.removeItem("ludoNick");
+    localStorage.removeItem("ludoAvatar");
+    localStorage.removeItem("ludoJogador");
+
+    salaAtual = null;
+    meuJogador = null;
+    souHost = false;
+    jogadoresDaSala = [];
+
+    btnCriarSala.disabled = false;
+    btnEntrarSala.disabled = false;
+
+    if (painelSala) {
+        painelSala.style.display = "none";
+    }
 });
 
 const painelSala = document.getElementById("painel-sala");
