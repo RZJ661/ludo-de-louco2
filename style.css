@@ -350,13 +350,14 @@ box-shadow: none;
     background-image: url("assets/homer.png");
     background-size: contain;
     background-repeat: no-repeat;
+    background-position: center;
 
-    right: -70px;
-    top: -15px;
+    right: -55px;
+    top: -20px;
 
     animation: homerAponta 0.45s infinite alternate;
-
     pointer-events: none;
+    z-index: 999;
 }
 
 @keyframes homerAponta {
@@ -437,6 +438,8 @@ box-shadow: none;
 
     font-size: 34px;
     cursor: pointer;
+    position: relative;
+    overflow: visible;
 
     display: flex;
     align-items: center;
