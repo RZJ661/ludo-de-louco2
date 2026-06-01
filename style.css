@@ -351,8 +351,8 @@ box-shadow: none;
     background-size: contain;
     background-repeat: no-repeat;
 
-    right: -95px;
-    top: -20px;
+    right: -70px;
+    top: -15px;
 
     animation: homerAponta 0.45s infinite alternate;
 
@@ -377,6 +377,10 @@ box-shadow: none;
 .dado-3d {
     font-size: 58px;
     line-height: 1;
+}
+
+.card-jogador {
+    position: relative;
 }
 
 .card-jogador {
