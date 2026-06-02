@@ -87,7 +87,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("entrarSala", (dados) => {
-        const codigo = dados.codigo;A
+        const codigo = dados.codigo;
 
         if (!salas[codigo]) {
             socket.emit("erroSala", "Sala não existe!");
