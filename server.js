@@ -21,25 +21,39 @@ io.on("connection", (socket) => {
         return;
     }
 
-    const jogadorAntigo = sala.jogadores[dados.jogador];
+    const indiceJogador = sala.jogadores.findIndex(
+    j => j.idUnico === dados.idUnico
+);
+
+if (indiceJogador === -1) {
+    socket.emit("erroSala", "Jogador não encontrado nessa sala!");
+    return;
+}
+
+const jogadorAntigo = sala.jogadores[indiceJogador];
 
     if (!jogadorAntigo) {
         socket.emit("erroSala", "Jogador não encontrado nessa sala!");
         return;
     }
 
-    sala.jogadores[dados.jogador] = {
-        id: socket.id,
-        idUnico: dados.idUnico,
-        nick: dados.nick,
-        avatar: dados.avatar
-    };
+  if (sala.host === jogadorAntigo.id) {
+    sala.host = socket.id;
+}
+
+sala.jogadores[indiceJogador] = {
+    ...jogadorAntigo,
+    id: socket.id,
+    online: true,
+    desconectado: false,
+    idUnico: dados.idUnico
+};
 
     socket.join(dados.codigo);
 
     socket.emit("entrouSala", {
     codigo: dados.codigo,
-    jogador: dados.jogador,
+    jogador: indiceJogador,
     jogadores: sala.jogadores,
     host: sala.host === socket.id
 });
@@ -110,11 +124,12 @@ if (nickExiste) {
 
         const numeroJogador = salas[codigo].jogadores.length;
 
-        salas[codigo].jogadores.push({
-            id: socket.id,
-            nick: dados.nick,
-            avatar: dados.avatar
-        });
+       salas[codigo].jogadores.push({
+    id: socket.id,
+    idUnico: dados.idUnico,
+    nick: dados.nick,
+    avatar: dados.avatar
+});
 
         socket.join(codigo);
 

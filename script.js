@@ -1944,15 +1944,14 @@ window.addEventListener("load", () => {
     const salaSalva = localStorage.getItem("ludoSalaAtual");
     const nickSalvo = localStorage.getItem("ludoNick");
     const avatarSalvo = localStorage.getItem("ludoAvatar");
-    const jogadorSalvo = localStorage.getItem("ludoJogador");
 
-    if (!salaSalva || jogadorSalvo === null) return;
+    if (!salaSalva || !meuIdUnico) return;
 
     socket.emit("reconectarSala", {
         codigo: salaSalva,
         nick: nickSalvo,
         avatar: avatarSalvo,
-        jogador: Number(jogadorSalvo)
+        idUnico: meuIdUnico
     });
 });
 
