@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
 
     sala.jogadores[dados.jogador] = {
         id: socket.id,
+        idUnico: dados.idUnico,
         nick: dados.nick,
         avatar: dados.avatar
     };
@@ -62,6 +63,7 @@ io.on("connection", (socket) => {
     jogadores: [
         {
             id: socket.id,
+            idUnico: dados.idUnico,
             nick: dados.nick,
             avatar: dados.avatar
         }
@@ -85,7 +87,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("entrarSala", (dados) => {
-        const codigo = dados.codigo;
+        const codigo = dados.codigo;A
 
         if (!salas[codigo]) {
             socket.emit("erroSala", "Sala não existe!");

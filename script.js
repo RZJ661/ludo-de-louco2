@@ -16,6 +16,12 @@ let meuAvatar = "";
 let souHost = false;
 let meuJogador = null;
 let jogadoresDaSala = [];
+let meuIdUnico = localStorage.getItem("ludoIdUnico");
+
+if (!meuIdUnico) {
+    meuIdUnico = crypto.randomUUID();
+    localStorage.setItem("ludoIdUnico", meuIdUnico);
+}
 let recebendoEstadoOnline = false;
 
 let animandoMovimentoOnline = false;
@@ -1615,10 +1621,11 @@ btnCriarSala.addEventListener("click", () => {
     souHost = true;
 
     socket.emit("criarSala", {
-        codigo: salaAtual,
-        nick: meuNick,
-        avatar: meuAvatar
-    });
+    codigo: salaAtual,
+    nick: meuNick,
+    avatar: meuAvatar,
+    idUnico: meuIdUnico
+});
 });
 
 btnEntrarSala.addEventListener("click", () => {
@@ -1639,10 +1646,11 @@ salaAtual = campoCodigo.value.trim().toUpperCase();
     }
 
     socket.emit("entrarSala", {
-        codigo: salaAtual,
-        nick: meuNick,
-        avatar: meuAvatar
-    });
+    codigo: salaAtual,
+    nick: meuNick,
+    avatar: meuAvatar,
+    idUnico: meuIdUnico
+});
 });
 
 function aplicarDadosOnline(dados) {
