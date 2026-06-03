@@ -50,6 +50,9 @@ sala.jogadores[indiceJogador] = {
 };
 
     socket.join(dados.codigo);
+    if (sala.estado) {
+    socket.emit("estadoAtualizado", sala.estado);
+}
 
     socket.emit("entrouSala", {
     codigo: dados.codigo,
@@ -59,6 +62,7 @@ sala.jogadores[indiceJogador] = {
 });
 
     io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
+    io.to(dados.codigo).emit("hostAtualizado", sala.host);
 
     socket.to(dados.codigo).emit("alguemPediuEstado", socket.id);
 });
@@ -167,8 +171,15 @@ if (nickExiste) {
     });
 
     socket.on("sincronizarEstado", (estado) => {
-        socket.to(estado.sala).emit("estadoAtualizado", estado);
-    });
+    if (!estado || !estado.sala) return;
+
+    const sala = salas[estado.sala];
+    if (!sala) return;
+
+    sala.estado = estado;
+
+    io.to(estado.sala).emit("estadoAtualizado", estado);
+});
 
     socket.on("dadoRolado", (dados) => {
     socket.to(dados.sala).emit("dadoRolado", dados);
