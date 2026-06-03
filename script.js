@@ -97,13 +97,11 @@ let dadoTravado = false;
 let timerAFK = null;
 
 const sonsDadoGiro = [
-    "assets/dado/giro1.mp3",
-    "assets/dado/giro2.mp3"
+    "assets/dado/dado.mp3",
 ];
 
 const sonsMovimento = [
     "assets/movimento/passo1.mp3",
-    "assets/movimento/passo2.mp3"
 ];
 
 const sonsGol = [
@@ -1842,7 +1840,7 @@ socket.on("dadoRolado", async (dados) => {
     );
 
     if (!botao) return;
-    
+
     tocarSomAleatorio(sonsDadoGiro);
 
     const visual = botao.querySelector(".dado-3d");
