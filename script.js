@@ -1957,6 +1957,24 @@ window.addEventListener("load", () => {
 
     if (!salaSalva || !meuIdUnico) return;
 
+    const querReconectar = confirm(
+        `Você estava na sala ${salaSalva}. Quer reconectar?`
+    );
+
+    if (!querReconectar) {
+        localStorage.removeItem("ludoSalaAtual");
+        localStorage.removeItem("ludoNick");
+        localStorage.removeItem("ludoAvatar");
+        localStorage.removeItem("ludoJogador");
+
+        salaAtual = null;
+        meuJogador = null;
+        souHost = false;
+        jogadoresDaSala = [];
+
+        return;
+    }
+
     socket.emit("reconectarSala", {
         codigo: salaSalva,
         nick: nickSalvo,
