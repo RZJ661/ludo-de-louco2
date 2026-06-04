@@ -193,8 +193,12 @@ socket.on("somComer", (dados) => {
     io.to(dados.sala).emit("somComer");
 });
 
-socket.on("pedirEstado", (sala) => {
-    socket.to(sala).emit("alguemPediuEstado", socket.id);
+socket.on("pedirEstado", (codigo) => {
+    const sala = salas[codigo];
+
+    if (!sala || !sala.estado) return;
+
+    socket.emit("estadoAtualizado", sala.estado);
 });
 
 socket.on("responderEstado", (dados) => {
