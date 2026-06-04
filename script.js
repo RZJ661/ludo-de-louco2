@@ -101,7 +101,7 @@ const sonsDadoGiro = [
 ];
 
 const sonsMovimento = [
-    "assets/movimento/passo1.mp3",
+    "assets/movimento/passo.mp3"
 ];
 
 const sonsGol = [
@@ -706,6 +706,7 @@ function tirarDaBase(jogador, pecaIndex) {
     info.textContent = `${nomes[jogador]} tirou uma peça da base!`;
 }
 async function moverPeca(jogador, pecaIndex, passos) {
+    tocarSomAleatorio(sonsMovimento);
 
     if (salaAtual && !recebendoEstadoOnline) {
     socket.emit("pecaMovendo", {
