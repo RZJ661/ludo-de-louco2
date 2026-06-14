@@ -402,8 +402,13 @@ if (meuJogador !== null && jogadorDoDado !== meuJogador) {
     return;
 }
 
-       if (animando) return;
-       if (dadoTravado) return;
+        await rolarDado(botao);
+    });
+});
+
+async function rolarDado(botao, numeroForcado = null) {
+if (animando) return;
+if (dadoTravado) return;
 dadoTravado = true;
 
 fecharMenuDados();
@@ -429,7 +434,7 @@ const visual = botao.querySelector(".dado-3d");
 
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        const numero = Math.floor(Math.random() * 6) + 1;
+        const numero = numeroForcado ?? Math.floor(Math.random() * 6) + 1;
 
         if (salaAtual) {
     socket.emit("dadoRolado", {
@@ -531,8 +536,7 @@ botao.disabled = true;
 
 info.textContent = `${nomes[jogadorAtual]}, escolha uma peça. Tempo: 15s.`;
     iniciarTimerAFK();
-    });
-});
+}
 
 function clicarNaPeca(jogador, pecaIndex) {
     if (animando) return;
@@ -1507,25 +1511,16 @@ if (fecharADM) {
     });
 }
 document.querySelectorAll(".adm-forcar-dado").forEach(botao => {
-    botao.addEventListener("click", () => {
+    botao.addEventListener("click", async () => {
         if (!modoADM) return;
 
         const valor = Number(botao.dataset.valor);
+        const dadoDoJogador = document.querySelector(
+            `.dado-card[data-jogador="${jogadorAtual}"]`
+        );
 
-        dadosPendentes.push(valor);
-
-animando = false;
-dadoTravado = false;
-
-botoesDados.forEach(dado => {
-    dado.disabled = false;
-    dado.classList.remove("rolando");
-});
-
-atualizarPainel();
-iniciarTimerAFK();
-
-        info.textContent = `ADM adicionou 🎲${valor} para ${nomes[jogadorAtual]}.`;
+        if (!dadoDoJogador) return;
+        await rolarDado(dadoDoJogador, valor);
     });
 });
 
