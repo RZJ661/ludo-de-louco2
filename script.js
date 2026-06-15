@@ -1673,7 +1673,7 @@ salaAtual = campoCodigo.value.trim().toUpperCase();
 function aplicarDadosOnline(dados) {
     salaAtual = dados.codigo;
     meuJogador = dados.jogador;
-    souHost = dados.host === true || meuJogador === 0;
+    souHost = dados.host === true;
     localStorage.setItem("ludoSalaAtual", salaAtual);
 localStorage.setItem("ludoNick", meuNick);
 localStorage.setItem("ludoAvatar", meuAvatar);
@@ -1892,29 +1892,6 @@ socket.on("pecaMovendo", async (dados) => {
     }
 });
 
-function estadoAtualCompleto() {
-    return {
-        sala: salaAtual,
-        jogadorAtual,
-        progresso,
-        golsFeitos,
-        ranking,
-        jogadoresFinalizados,
-        dadosPendentes,
-        bonusGiros,
-        seisSeguidos
-    };
-}
-
-socket.on("alguemPediuEstado", (destino) => {
-    if (!salaAtual) return;
-
-    socket.emit("responderEstado", {
-        destino,
-        estado: estadoAtualCompleto()
-    });
-});
-
 function pedirResyncOnline() {
     if (!salaAtual) {
         mostrarAviso("Você não está em uma sala!");
@@ -1959,6 +1936,17 @@ socket.on("hostAtualizado", (novoHostId) => {
     }
 });
 
+socket.on("connect", () => {
+    if (!salaAtual || !meuIdUnico) return;
+
+    socket.emit("reconectarSala", {
+        codigo: salaAtual,
+        nick: meuNick,
+        avatar: meuAvatar,
+        idUnico: meuIdUnico
+    });
+});
+
 window.addEventListener("load", () => {
     const salaSalva = localStorage.getItem("ludoSalaAtual");
     const nickSalvo = localStorage.getItem("ludoNick");
@@ -1983,6 +1971,9 @@ window.addEventListener("load", () => {
 
         return;
     }
+
+    meuNick = nickSalvo || "";
+    meuAvatar = avatarSalvo || "";
 
     socket.emit("reconectarSala", {
         codigo: salaSalva,

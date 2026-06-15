@@ -10,6 +10,16 @@ app.use(express.static(__dirname));
 
 const salas = {};
 
+function socketPertenceSala(socket, codigo) {
+    const sala = salas[codigo];
+
+    return Boolean(
+        sala &&
+        socket.rooms.has(codigo) &&
+        sala.jogadores.some(jogador => jogador.id === socket.id)
+    );
+}
+
 io.on("connection", (socket) => {
     console.log("Jogador conectado:", socket.id);
 
@@ -50,10 +60,6 @@ sala.jogadores[indiceJogador] = {
 };
 
     socket.join(dados.codigo);
-    if (sala.estado) {
-    socket.emit("estadoAtualizado", sala.estado);
-}
-
     socket.emit("entrouSala", {
     codigo: dados.codigo,
     jogador: indiceJogador,
@@ -64,7 +70,13 @@ sala.jogadores[indiceJogador] = {
     io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
     io.to(dados.codigo).emit("hostAtualizado", sala.host);
 
-    socket.to(dados.codigo).emit("alguemPediuEstado", socket.id);
+    if (sala.estado) {
+        socket.emit("estadoAtualizado", sala.estado);
+    }
+
+    if (sala.partidaIniciada) {
+        socket.emit("partidaIniciada");
+    }
 });
 
     socket.on("criarSala", (dados) => {
@@ -93,7 +105,8 @@ sala.jogadores[indiceJogador] = {
         socket.emit("salaCriada", {
             codigo,
             jogador: 0,
-            jogadores: salas[codigo].jogadores
+            jogadores: salas[codigo].jogadores,
+            host: true
         });
 
         io.to(codigo).emit(
@@ -109,6 +122,11 @@ sala.jogadores[indiceJogador] = {
 
         if (!salas[codigo]) {
             socket.emit("erroSala", "Sala não existe!");
+            return;
+        }
+
+        if (salas[codigo].partidaIniciada) {
+            socket.emit("erroSala", "A partida dessa sala já foi iniciada!");
             return;
         }
 
@@ -174,7 +192,7 @@ if (nickExiste) {
     if (!estado || !estado.sala) return;
 
     const sala = salas[estado.sala];
-    if (!sala) return;
+    if (!sala || !socketPertenceSala(socket, estado.sala)) return;
 
     sala.estado = estado;
 
@@ -182,27 +200,26 @@ if (nickExiste) {
 });
 
     socket.on("dadoRolado", (dados) => {
+    if (!dados || !socketPertenceSala(socket, dados.sala)) return;
     socket.to(dados.sala).emit("dadoRolado", dados);
 });
 
 socket.on("pecaMovendo", (dados) => {
+    if (!dados || !socketPertenceSala(socket, dados.sala)) return;
     socket.to(dados.sala).emit("pecaMovendo", dados);
 });
 
 socket.on("somComer", (dados) => {
+    if (!dados || !socketPertenceSala(socket, dados.sala)) return;
     io.to(dados.sala).emit("somComer");
 });
 
 socket.on("pedirEstado", (codigo) => {
     const sala = salas[codigo];
 
-    if (!sala || !sala.estado) return;
+    if (!sala || !sala.estado || !socketPertenceSala(socket, codigo)) return;
 
     socket.emit("estadoAtualizado", sala.estado);
-});
-
-socket.on("responderEstado", (dados) => {
-    io.to(dados.destino).emit("estadoAtualizado", dados.estado);
 });
 
     socket.on("disconnect", () => {
@@ -217,6 +234,17 @@ socket.on("responderEstado", (dados) => {
 
         if (sala.partidaIniciada) {
             sala.jogadores[index].desconectado = true;
+
+            if (sala.host === socket.id) {
+                const novoHost = sala.jogadores.find(jogador =>
+                    jogador.id !== socket.id && !jogador.desconectado
+                );
+
+                if (novoHost) {
+                    sala.host = novoHost.id;
+                    io.to(codigo).emit("hostAtualizado", sala.host);
+                }
+            }
 
             io.to(codigo).emit("jogadoresAtualizados", sala.jogadores);
             return;
