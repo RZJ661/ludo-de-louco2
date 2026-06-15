@@ -407,13 +407,17 @@ if (meuJogador !== null && jogadorDoDado !== meuJogador) {
 });
 
 async function rolarDado(botao, numeroForcado = null) {
+const rolagemForcada = Number.isInteger(numeroForcado) &&
+    numeroForcado >= 1 &&
+    numeroForcado <= 6;
+
 if (animando) return;
-if (dadoTravado) return;
+if (dadoTravado && !rolagemForcada) return;
 dadoTravado = true;
 
 fecharMenuDados();
 
-if (dadosPendentes.length > 0 && bonusGiros === 0) {
+if (!rolagemForcada && dadosPendentes.length > 0 && bonusGiros === 0) {
     mostrarAviso("🎲 Usa os dados acumulados primeiro, apressado!");
     dadoTravado = false;
     return;
@@ -429,12 +433,21 @@ botao.disabled = true;
 tocarSomAleatorio(sonsDadoGiro);
 const visual = botao.querySelector(".dado-3d");
 
+        botao.classList.remove("rolando");
+        void botao.offsetWidth;
         botao.classList.add("rolando");
-        visual.textContent = "🎲";
+        visual.textContent = facesDado[Math.floor(Math.random() * 6) + 1];
 
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const intervaloFaces = setInterval(() => {
+            visual.textContent = facesDado[Math.floor(Math.random() * 6) + 1];
+        }, 80);
 
-        const numero = numeroForcado ?? Math.floor(Math.random() * 6) + 1;
+        await new Promise(resolve => setTimeout(resolve, 600));
+        clearInterval(intervaloFaces);
+
+        const numero = rolagemForcada
+            ? numeroForcado
+            : Math.floor(Math.random() * 6) + 1;
 
         if (salaAtual) {
     socket.emit("dadoRolado", {
