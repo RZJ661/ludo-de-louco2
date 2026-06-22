@@ -84,6 +84,24 @@ let progresso = [
     [-1, -1, -1, -1]
 ];
 
+let turnosPresoBase = [0, 0, 0, 0];
+
+const mensagensPresoBase = {
+    3: "😅 Tá difícil sair da base...",
+    4: "😂 A base virou casa?",
+    5: "🤣 Alguém chama o Uber da peça!",
+    6: "💀 Essa peça criou raiz na base.",
+    7: "😬 O dado tá de perseguição.",
+    8: "😭 Nem com reza sai 6.",
+    9: "🔥 Já virou sofrimento oficial.",
+    10: "👀 10 turnos preso... isso é histórico.",
+    11: "🤡 O dado tá de palhaçada.",
+    12: "🪦 A peça já foi enterrada na base.",
+    13: "😵 Nível máximo de azar quase chegando.",
+    14: "🚨 Alerta vermelho de zica!",
+    15: "🏆 Troféu Azar Supremo desbloqueado!"
+};
+
 let golsFeitos = [
     [false, false, false, false],
     [false, false, false, false],
@@ -734,7 +752,9 @@ function jogadaValidaComDado(jogador, pecaIndex, dado) {
 
 function tirarDaBase(jogador, pecaIndex) {
     progresso[jogador][pecaIndex] = 0;
+    turnosPresoBase[jogador] = 0;
     renderizarPeca(jogador, pecaIndex);
+    atualizarPainel();
 
     info.textContent = `${nomes[jogador]} tirou uma peça da base!`;
 }
@@ -1122,7 +1142,8 @@ function enviarEstadoOnline() {
         jogadoresFinalizados,
         dadosPendentes,
         bonusGiros,
-        seisSeguidos
+        seisSeguidos,
+        turnosPresoBase
     });
 }
 function limparTurno() {
@@ -1244,6 +1265,17 @@ hallFama.innerHTML = `
 
 function passarTurno() {
     pararTimerAFK();
+
+    const jogadorParticipa = !salaAtual || jogadoresDaSala[jogadorAtual];
+    const todasNaBase = progresso[jogadorAtual].every(posicao => posicao === -1);
+
+    if (jogadorParticipa && todasNaBase && !jogadoresFinalizados[jogadorAtual]) {
+        turnosPresoBase[jogadorAtual]++;
+
+        const mensagem = mensagensPresoBase[turnosPresoBase[jogadorAtual]];
+        if (mensagem) mostrarAviso(mensagem);
+    }
+
     limparTurno();
 
     if (ranking.length >= 3) {
@@ -1287,7 +1319,8 @@ if (salaAtual && !recebendoEstadoOnline) {
     jogadoresFinalizados,
     dadosPendentes,
     bonusGiros,
-    seisSeguidos
+    seisSeguidos,
+    turnosPresoBase
 });
 }
 
@@ -1440,6 +1473,15 @@ function pararTimerAFK() {
 function atualizarPainel() {
     nickJogador.textContent = nomes[jogadorAtual];
     turnoTexto.textContent = nomes[jogadorAtual];
+
+    document.querySelectorAll(".card-jogador").forEach(card => {
+        const jogador = Number(card.dataset.jogador);
+        const status = card.querySelector(".status-card");
+
+        if (status) {
+            status.textContent = `😅 Preso: ${turnosPresoBase[jogador]} turnos`;
+        }
+    });
 
     document.querySelectorAll(".card-jogador").forEach(card => {
         card.classList.remove("ativo");
@@ -1837,6 +1879,8 @@ socket.on("partidaIniciada", () => {
 function aplicarEstadoOnline(estado) {
     recebendoEstadoOnline = true;
 
+    const turnosPresoAnteriores = [...turnosPresoBase];
+
     jogadorAtual = estado.jogadorAtual;
     progresso = estado.progresso;
     golsFeitos = estado.golsFeitos;
@@ -1846,6 +1890,14 @@ function aplicarEstadoOnline(estado) {
     dadosPendentes = estado.dadosPendentes || [];
     bonusGiros = estado.bonusGiros || 0;
     seisSeguidos = estado.seisSeguidos || 0;
+    turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
+
+    turnosPresoBase.forEach((quantidade, jogador) => {
+        if (quantidade === turnosPresoAnteriores[jogador] + 1) {
+            const mensagem = mensagensPresoBase[quantidade];
+            if (mensagem) mostrarAviso(mensagem);
+        }
+    });
 
     for (let j = 0; j < 4; j++) {
         for (let p = 0; p < 4; p++) {
