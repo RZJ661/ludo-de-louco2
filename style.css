@@ -609,6 +609,11 @@ box-shadow: none;
     transform: translateX(-50%) translateY(0);
 }
 
+#toast-jogo.adm-publico {
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 #tela-final {
     position: fixed;
     inset: 0;

@@ -2,6 +2,7 @@ const nomes = ["Vermelho", "Azul", "Amarelo", "Verde"];
 const classesPainel = ["painel-vermelho", "painel-azul", "painel-amarelo", "painel-verde"];
 
 let modoADM = false;
+let admPublico = false;
 
 let jogadorAtual = 0;
 
@@ -63,6 +64,7 @@ let timerToast = null;
 function mostrarAviso(mensagem) {
     if (!toastJogo) return;
 
+    toastJogo.classList.remove("adm-publico");
     toastJogo.textContent = mensagem;
     toastJogo.classList.add("mostrar");
 
@@ -549,6 +551,20 @@ botao.disabled = true;
 
 info.textContent = `${nomes[jogadorAtual]}, escolha uma peça. Tempo: 15s.`;
     iniciarTimerAFK();
+}
+
+function mostrarAvisoADMPublico(ativo) {
+    if (!toastJogo) return;
+
+    toastJogo.textContent = ativo
+        ? "👑 Modo ADM Ativado"
+        : "👑 Modo ADM Desativado";
+    toastJogo.classList.add("adm-publico", "mostrar");
+
+    clearTimeout(timerToast);
+    timerToast = setTimeout(() => {
+        toastJogo.classList.remove("mostrar", "adm-publico");
+    }, 3000);
 }
 
 function clicarNaPeca(jogador, pecaIndex) {
@@ -1497,12 +1513,20 @@ document.addEventListener("keydown", (e) => {
 
         const senha = prompt("Digite a senha ADM:");
 
-        if (senha !== "papafigo2") {
+        if (senha !== "papafigo2" && senha !== "papafigo3") {
             alert("❌ Senha incorreta!");
             return;
         }
 
         modoADM = !modoADM;
+        admPublico = senha === "papafigo3" && modoADM;
+
+        if (senha === "papafigo3" && salaAtual) {
+            socket.emit("modoADMPublico", {
+                sala: salaAtual,
+                ativo: modoADM
+            });
+        }
 const painelADM = document.getElementById("painel-adm");
 
 if (painelADM) {
@@ -1519,8 +1543,18 @@ const fecharADM = document.getElementById("fechar-adm");
 
 if (fecharADM) {
     fecharADM.addEventListener("click", () => {
+        const deveAvisar = modoADM && admPublico && salaAtual;
+
         modoADM = false;
+        admPublico = false;
         document.getElementById("painel-adm").style.display = "none";
+
+        if (deveAvisar) {
+            socket.emit("modoADMPublico", {
+                sala: salaAtual,
+                ativo: false
+            });
+        }
     });
 }
 document.querySelectorAll(".adm-forcar-dado").forEach(botao => {
@@ -1910,6 +1944,10 @@ document.addEventListener("keydown", (e) => {
 
 socket.on("somComer", () => {
     tocarSomAleatorio(sonsComer);
+});
+
+socket.on("modoADMPublico", (ativo) => {
+    mostrarAvisoADMPublico(ativo);
 });
 
 document.addEventListener("visibilitychange", () => {

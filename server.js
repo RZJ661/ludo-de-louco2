@@ -214,6 +214,11 @@ socket.on("somComer", (dados) => {
     io.to(dados.sala).emit("somComer");
 });
 
+socket.on("modoADMPublico", (dados) => {
+    if (!dados || !socketPertenceSala(socket, dados.sala)) return;
+    io.to(dados.sala).emit("modoADMPublico", dados.ativo === true);
+});
+
 socket.on("pedirEstado", (codigo) => {
     const sala = salas[codigo];
 
