@@ -200,6 +200,8 @@ let afkSeguidos = [0, 0, 0, 0];
 
 let jogadaAutomatica = false;
 
+let processoPendente = false;
+
 let intervaloTimerAFK = null;
 let segundosTimerAFK = 0;
 
@@ -434,13 +436,17 @@ const rolagemForcada = Number.isInteger(numeroForcado) &&
 
 if (animando) return;
 if (dadoTravado && !rolagemForcada) return;
+if (processoPendente) return;
 dadoTravado = true;
+processoPendente = true;
+limparDestaquePecas();
 
 fecharMenuDados();
 
 if (!rolagemForcada && dadosPendentes.length > 0 && bonusGiros === 0) {
     mostrarAviso("🎲 Usa os dados acumulados primeiro, apressado!");
     dadoTravado = false;
+    processoPendente = false;
     return;
 }
 
@@ -488,14 +494,14 @@ const visual = botao.querySelector(".dado-3d");
        if (numero === 6) {
     seisSeguidos++;
 
-    if (seisSeguidos >= 3) {
-        pararTimerAFK();
-        const mensagensTriploSeis = [
-    `💀 ${nomes[jogadorAtual]} tirou 6-6-6 e foi punido pelo universo!`,
-    `🤣 ${nomes[jogadorAtual]} abusou da sorte e levou uma rasteira!`,
-    `🐂 Três seis seguidos? Calma aí, campeão... perdeu a vez!`,
-    `⚡ Jackpot maldito ativado para ${nomes[jogadorAtual]}!`,
-    `🔥 ${nomes[jogadorAtual]} voou perto demais do sol e caiu bonito!`
+if (seisSeguidos >= 3) {
+    pararTimerAFK();
+    const mensagensTriploSeis = [
+`💀 ${nomes[jogadorAtual]} tirou 6-6-6 e foi punido pelo universo!`,
+`🤣 ${nomes[jogadorAtual]} abusou da sorte e levou uma rasteira!`,
+`🐂 Três seis seguidos? Calma aí, campeão... perdeu a vez!`,
+`⚡ Jackpot maldito ativado para ${nomes[jogadorAtual]}!`,
+`🔥 ${nomes[jogadorAtual]} voou perto demais do sol e caiu bonito!`
 ];
 
 info.textContent =
@@ -505,6 +511,7 @@ mensagensTriploSeis[
 
         animando = false;
         dadoTravado = false;
+        processoPendente = false;
         botao.disabled = false;
 
         limparTurno();
@@ -553,6 +560,7 @@ if (jogadas.length === 0) {
         animando = false;
         
         dadoTravado = false;
+        processoPendente = false;
 
         botoesDados.forEach(dado => {
             dado.disabled = false;
@@ -568,8 +576,40 @@ animando = false;
 dadoTravado = true;
 botao.disabled = true;
 
+if (jogadas.length === 0) {
+    pararTimerAFK();
+    info.textContent = `${nomes[jogadorAtual]} não tem jogada válida. Passando turno...`;
+
+    animando = true;
+    dadoTravado = true;
+
+    botoesDados.forEach(dado => {
+        dado.disabled = true;
+    });
+
+    limparTurno();
+
+    setTimeout(() => {
+        animando = false;
+        
+        dadoTravado = false;
+        processoPendente = false;
+
+        botoesDados.forEach(dado => {
+            dado.disabled = false;
+        });
+
+        passarTurno();
+    }, 800);
+
+    return;
+}
+
+destacarPecasValidas(jogadorAtual, jogadas);
+
 info.textContent = `${nomes[jogadorAtual]}, escolha uma peça. Tempo: 15s.`;
-    iniciarTimerAFK();
+iniciarTimerAFK();
+processoPendente = false;
 }
 
 function mostrarAvisoADMPublico(ativo) {
@@ -588,6 +628,7 @@ function mostrarAvisoADMPublico(ativo) {
 
 function clicarNaPeca(jogador, pecaIndex) {
     if (animando) return;
+    if (processoPendente) return;
 
     // Online: clicou em peça de outra cor
     if (meuJogador !== null && jogador !== meuJogador) {
@@ -687,8 +728,9 @@ function fecharMenuDados() {
 }
 
 async function usarDadoNaPeca(jogador, pecaIndex, dadoIndex) {
-    afkSeguidos[jogadorAtual] = 0;
-    if (animando) return;
+    if (processoPendente) return;
+    processoPendente = true;
+    limparDestaquePecas();
 
     pararTimerAFK();
 
@@ -983,6 +1025,27 @@ function organizarTodasAsCasas() {
     });
 }
 
+function limparDestaquePecas() {
+    document.querySelectorAll(".peca").forEach(peca => {
+        peca.classList.remove("valida", "invalida");
+    });
+}
+
+function destacarPecasValidas(jogador, jogadas) {
+    limparDestaquePecas();
+
+    for (let p = 0; p < 4; p++) {
+        const peca = pecasDOM[jogador][p];
+        if (!peca) continue;
+
+        if (jogadas.includes(p)) {
+            peca.classList.add("valida");
+        } else {
+            peca.classList.add("invalida");
+        }
+    }
+}
+
 function verificarCaptura(jogador, pecaIndex) {
     const prog = progresso[jogador][pecaIndex];
 
@@ -1099,6 +1162,7 @@ function terminarJogada(ganhouGiro) {
     if (bonusGiros > 0) {
         animando = false;
         dadoTravado = false;
+        processoPendente = false;
 
         botoesDados.forEach(dado => {
             dado.disabled = false;
@@ -1124,6 +1188,7 @@ function terminarJogada(ganhouGiro) {
             atualizarPainel();
             info.textContent += " Dados restantes.";
             iniciarTimerAFK();
+            processoPendente = false;
             enviarEstadoOnline();
             return;
         }
@@ -1298,6 +1363,7 @@ function passarTurno() {
         dado.disabled = true;
     });
 
+    processoPendente = false;
         mostrarTelaFinal();
 return;
 
@@ -1322,8 +1388,7 @@ if (salaAtual && !recebendoEstadoOnline) {
     dadosPendentes,
     bonusGiros,
     seisSeguidos,
-    turnosPresoBase,
-    modoJogo
+    turnosPresoBase
 });
 }
 
@@ -1343,8 +1408,12 @@ botoesDados.forEach(dado => {
 });
 
     atualizarPainel();
+processoPendente = false;
 iniciarTimerAFK();
 }
+
+
+
 
 function verificarVitoria(jogador) {
     const venceu = golsFeitos[jogador].every(gol => gol === true);
@@ -1967,6 +2036,7 @@ function aplicarEstadoOnline(estado) {
     });
 
     recebendoEstadoOnline = false;
+    processoPendente = false;
 }
 
 socket.on("estadoAtualizado", (estado) => {
