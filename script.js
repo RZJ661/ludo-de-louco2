@@ -18,6 +18,7 @@ let souHost = false;
 let meuJogador = null;
 let jogadoresDaSala = [];
 let meuIdUnico = localStorage.getItem("ludoIdUnico");
+let modoJogo = "classico";
 
 if (!meuIdUnico) {
     meuIdUnico = crypto.randomUUID();
@@ -989,7 +990,7 @@ function verificarCaptura(jogador, pecaIndex) {
 
     const posicaoGlobal = (indicesSaida[jogador] + prog) % caminho.length;
 
-    if (casasSeguras.includes(posicaoGlobal)) {
+    if (modoJogo === "classico" && casasSeguras.includes(posicaoGlobal)) {
         return false;
     }
 
@@ -1143,7 +1144,8 @@ function enviarEstadoOnline() {
         dadosPendentes,
         bonusGiros,
         seisSeguidos,
-        turnosPresoBase
+        turnosPresoBase,
+        modoJogo
     });
 }
 function limparTurno() {
@@ -1320,7 +1322,8 @@ if (salaAtual && !recebendoEstadoOnline) {
     dadosPendentes,
     bonusGiros,
     seisSeguidos,
-    turnosPresoBase
+    turnosPresoBase,
+    modoJogo
 });
 }
 
@@ -1751,13 +1754,14 @@ function aplicarDadosOnline(dados) {
     meuJogador = dados.jogador;
     souHost = dados.host === true;
     localStorage.setItem("ludoSalaAtual", salaAtual);
-localStorage.setItem("ludoNick", meuNick);
-localStorage.setItem("ludoAvatar", meuAvatar);
-localStorage.setItem("ludoJogador", meuJogador);
+    localStorage.setItem("ludoNick", meuNick);
+    localStorage.setItem("ludoAvatar", meuAvatar);
+    localStorage.setItem("ludoJogador", meuJogador);
     jogadoresDaSala = dados.jogadores;
+    modoJogo = dados.modoJogo || "classico";
 
-console.log("MEU JOGADOR:", meuJogador);
-console.log("NICK:", meuNick);
+    console.log("MEU JOGADOR:", meuJogador);
+    console.log("NICK:", meuNick);
 
     mostrarAviso(`Sala: ${salaAtual} | Você é ${nomes[meuJogador]}`);
 
@@ -1857,6 +1861,17 @@ if (jogadores.length === 1) {
 } else {
     btnIniciarPartida.textContent = "🎮 Iniciar Partida";
 }
+
+        const seletorModo = document.getElementById("seletor-modo");
+        const selectModo = document.getElementById("select-modo-jogo");
+
+        if (seletorModo) {
+            seletorModo.style.display = "block";
+        }
+
+        if (selectModo) {
+            selectModo.value = modoJogo;
+        }
     }
 }
 
@@ -1868,6 +1883,39 @@ btnIniciarPartida.addEventListener("click", () => {
     return;
 }
     socket.emit("iniciarPartida", salaAtual);
+});
+
+const selectModoJogo = document.getElementById("select-modo-jogo");
+
+if (selectModoJogo) {
+    selectModoJogo.addEventListener("change", () => {
+        if (!souHost || !salaAtual) return;
+
+        const modo = selectModoJogo.value;
+        modoJogo = modo;
+
+        socket.emit("definirModoJogo", {
+            codigo: salaAtual,
+            modo: modo
+        });
+    });
+}
+
+socket.on("modoJogoAtualizado", (modo) => {
+    modoJogo = modo;
+
+    const selectModo = document.getElementById("select-modo-jogo");
+
+    if (selectModo) {
+        selectModo.value = modo;
+    }
+
+    const nomesModos = {
+        "classico": "Ludo Clássico",
+        "semCasasSeguras": "Sem Casas Seguras"
+    };
+
+    mostrarAviso(`🎮 Modo alterado para: ${nomesModos[modo] || modo}`);
 });
 
 socket.on("partidaIniciada", () => {
@@ -1891,6 +1939,7 @@ function aplicarEstadoOnline(estado) {
     bonusGiros = estado.bonusGiros || 0;
     seisSeguidos = estado.seisSeguidos || 0;
     turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
+    modoJogo = estado.modoJogo || "classico";
 
     turnosPresoBase.forEach((quantidade, jogador) => {
         if (quantidade === turnosPresoAnteriores[jogador] + 1) {

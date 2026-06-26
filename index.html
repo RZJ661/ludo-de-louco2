@@ -49,16 +49,24 @@
              Entrar Sala
  </button>
 
- <div id="painel-sala" style="display:none;">
-     <hr>
-     <h3>🌎 Sala: <span id="codigo-sala-online">----</span></h3>
-     <p id="contador-jogadores-online">Jogadores: 0/4</p>
+<div id="painel-sala" style="display:none;">
+      <hr>
+      <h3>🌎 Sala: <span id="codigo-sala-online">----</span></h3>
+      <p id="contador-jogadores-online">Jogadores: 0/4</p>
 
-     <div id="lista-jogadores-online"></div>
+      <div id="lista-jogadores-online"></div>
+
+      <div id="seletor-modo" style="margin-top:10px; display:none;">
+          <label for="select-modo-jogo">Modo de Jogo: </label>
+          <select id="select-modo-jogo">
+              <option value="classico">Ludo Clássico</option>
+              <option value="semCasasSeguras">Sem Casas Seguras</option>
+          </select>
+      </div>
 
 <button id="btn-iniciar-partida" style="display:none;">
-     Iniciar Partida
-    </button>
+      Iniciar Partida
+     </button>
 
     <button id="btn-sync-online">
      🔄 Sincronizar Partida

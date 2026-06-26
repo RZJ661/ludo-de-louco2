@@ -64,7 +64,8 @@ sala.jogadores[indiceJogador] = {
     codigo: dados.codigo,
     jogador: indiceJogador,
     jogadores: sala.jogadores,
-    host: sala.host === socket.id
+    host: sala.host === socket.id,
+    modoJogo: sala.modoJogo
 });
 
     io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
@@ -90,6 +91,7 @@ sala.jogadores[indiceJogador] = {
       salas[codigo] = {
     host: socket.id,
     partidaIniciada: false,
+    modoJogo: "classico",
     jogadores: [
         {
             id: socket.id,
@@ -158,7 +160,8 @@ if (nickExiste) {
         socket.emit("entrouSala", {
             codigo,
             jogador: numeroJogador,
-            jogadores: salas[codigo].jogadores
+            jogadores: salas[codigo].jogadores,
+            modoJogo: salas[codigo].modoJogo
         });
 
         io.to(codigo).emit(
@@ -186,6 +189,26 @@ if (nickExiste) {
 
         sala.partidaIniciada = true;
         io.to(codigo).emit("partidaIniciada");
+    });
+
+    socket.on("definirModoJogo", (dados) => {
+        const sala = salas[dados.codigo];
+
+        if (!sala) return;
+
+        if (sala.host !== socket.id) {
+            socket.emit("erroSala", "Só o host pode mudar o modo!");
+            return;
+        }
+
+        if (dados.modo !== "classico" && dados.modo !== "semCasasSeguras") {
+            socket.emit("erroSala", "Modo inválido!");
+            return;
+        }
+
+        sala.modoJogo = dados.modo;
+
+        io.to(dados.codigo).emit("modoJogoAtualizado", dados.modo);
     });
 
     socket.on("sincronizarEstado", (estado) => {
