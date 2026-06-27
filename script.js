@@ -1388,7 +1388,8 @@ if (salaAtual && !recebendoEstadoOnline) {
     dadosPendentes,
     bonusGiros,
     seisSeguidos,
-    turnosPresoBase
+    turnosPresoBase,
+    modoJogo
 });
 }
 
@@ -2008,7 +2009,7 @@ function aplicarEstadoOnline(estado) {
     bonusGiros = estado.bonusGiros || 0;
     seisSeguidos = estado.seisSeguidos || 0;
     turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
-    modoJogo = estado.modoJogo || "classico";
+    modoJogo = estado.modoJogo || modoJogo;
 
     turnosPresoBase.forEach((quantidade, jogador) => {
         if (quantidade === turnosPresoAnteriores[jogador] + 1) {

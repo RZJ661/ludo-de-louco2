@@ -108,7 +108,8 @@ sala.jogadores[indiceJogador] = {
             codigo,
             jogador: 0,
             jogadores: salas[codigo].jogadores,
-            host: true
+            host: true,
+            modoJogo: salas[codigo].modoJogo
         });
 
         io.to(codigo).emit(
@@ -208,6 +209,10 @@ if (nickExiste) {
 
         sala.modoJogo = dados.modo;
 
+        if (sala.estado) {
+            sala.estado.modoJogo = dados.modo;
+        }
+
         io.to(dados.codigo).emit("modoJogoAtualizado", dados.modo);
     });
 
@@ -217,6 +222,7 @@ if (nickExiste) {
     const sala = salas[estado.sala];
     if (!sala || !socketPertenceSala(socket, estado.sala)) return;
 
+    estado.modoJogo = sala.modoJogo;
     sala.estado = estado;
 
     io.to(estado.sala).emit("estadoAtualizado", estado);
