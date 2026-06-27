@@ -65,7 +65,8 @@ sala.jogadores[indiceJogador] = {
     jogador: indiceJogador,
     jogadores: sala.jogadores,
     host: sala.host === socket.id,
-    modoJogo: sala.modoJogo
+    modoJogo: sala.modoJogo,
+    tipoDado: sala.tipoDado
 });
 
     io.to(dados.codigo).emit("jogadoresAtualizados", sala.jogadores);
@@ -92,6 +93,7 @@ sala.jogadores[indiceJogador] = {
     host: socket.id,
     partidaIniciada: false,
     modoJogo: "classico",
+    tipoDado: "normal",
     jogadores: [
         {
             id: socket.id,
@@ -109,7 +111,8 @@ sala.jogadores[indiceJogador] = {
             jogador: 0,
             jogadores: salas[codigo].jogadores,
             host: true,
-            modoJogo: salas[codigo].modoJogo
+            modoJogo: salas[codigo].modoJogo,
+            tipoDado: salas[codigo].tipoDado
         });
 
         io.to(codigo).emit(
@@ -162,7 +165,8 @@ if (nickExiste) {
             codigo,
             jogador: numeroJogador,
             jogadores: salas[codigo].jogadores,
-            modoJogo: salas[codigo].modoJogo
+            modoJogo: salas[codigo].modoJogo,
+            tipoDado: salas[codigo].tipoDado
         });
 
         io.to(codigo).emit(
@@ -216,6 +220,35 @@ if (nickExiste) {
         io.to(dados.codigo).emit("modoJogoAtualizado", dados.modo);
     });
 
+    socket.on("definirTipoDado", (dados) => {
+        const sala = salas[dados.codigo];
+
+        if (!sala) return;
+
+        if (sala.host !== socket.id) {
+            socket.emit("erroSala", "SÃ³ o host pode mudar o tipo de dado!");
+            return;
+        }
+
+        if (sala.partidaIniciada) {
+            socket.emit("erroSala", "NÃ£o Ã© possÃ­vel mudar o tipo de dado com a partida iniciada!");
+            return;
+        }
+
+        if (dados.tipo !== "normal" && dados.tipo !== "balanceado") {
+            socket.emit("erroSala", "Tipo de dado invÃ¡lido!");
+            return;
+        }
+
+        sala.tipoDado = dados.tipo;
+
+        if (sala.estado) {
+            sala.estado.tipoDado = dados.tipo;
+        }
+
+        io.to(dados.codigo).emit("tipoDadoAtualizado", dados.tipo);
+    });
+
     socket.on("sincronizarEstado", (estado) => {
     if (!estado || !estado.sala) return;
 
@@ -223,6 +256,7 @@ if (nickExiste) {
     if (!sala || !socketPertenceSala(socket, estado.sala)) return;
 
     estado.modoJogo = sala.modoJogo;
+    estado.tipoDado = sala.tipoDado || "normal";
     sala.estado = estado;
 
     io.to(estado.sala).emit("estadoAtualizado", estado);

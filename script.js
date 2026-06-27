@@ -19,6 +19,7 @@ let meuJogador = null;
 let jogadoresDaSala = [];
 let meuIdUnico = localStorage.getItem("ludoIdUnico");
 let modoJogo = "classico";
+let tipoDado = "normal";
 
 if (!meuIdUnico) {
     meuIdUnico = crypto.randomUUID();
@@ -429,6 +430,26 @@ if (meuJogador !== null && jogadorDoDado !== meuJogador) {
     });
 });
 
+function sortearNumeroDado() {
+    if (tipoDado !== "balanceado") {
+        return Math.floor(Math.random() * 6) + 1;
+    }
+
+    const pesos = [17.5, 17.5, 17.5, 17.5, 17.5, 12.5];
+    const sorteio = Math.random() * 100;
+    let acumulado = 0;
+
+    for (let i = 0; i < pesos.length; i++) {
+        acumulado += pesos[i];
+
+        if (sorteio < acumulado) {
+            return i + 1;
+        }
+    }
+
+    return 6;
+}
+
 async function rolarDado(botao, numeroForcado = null) {
 const rolagemForcada = Number.isInteger(numeroForcado) &&
     numeroForcado >= 1 &&
@@ -474,7 +495,7 @@ const visual = botao.querySelector(".dado-3d");
 
         const numero = rolagemForcada
             ? numeroForcado
-            : Math.floor(Math.random() * 6) + 1;
+            : sortearNumeroDado();
 
         if (salaAtual) {
     socket.emit("dadoRolado", {
@@ -1210,7 +1231,8 @@ function enviarEstadoOnline() {
         bonusGiros,
         seisSeguidos,
         turnosPresoBase,
-        modoJogo
+        modoJogo,
+        tipoDado
     });
 }
 function limparTurno() {
@@ -1389,7 +1411,8 @@ if (salaAtual && !recebendoEstadoOnline) {
     bonusGiros,
     seisSeguidos,
     turnosPresoBase,
-    modoJogo
+    modoJogo,
+    tipoDado
 });
 }
 
@@ -1829,6 +1852,7 @@ function aplicarDadosOnline(dados) {
     localStorage.setItem("ludoJogador", meuJogador);
     jogadoresDaSala = dados.jogadores;
     modoJogo = dados.modoJogo || "classico";
+    tipoDado = dados.tipoDado || "normal";
 
     console.log("MEU JOGADOR:", meuJogador);
     console.log("NICK:", meuNick);
@@ -1921,6 +1945,18 @@ function atualizarPainelSala(jogadores) {
         `;
     }).join("");
 
+    const seletorTipoDado = document.getElementById("seletor-tipo-dado");
+    const selectTipoDado = document.getElementById("select-tipo-dado");
+
+    if (seletorTipoDado) {
+        seletorTipoDado.style.display = "block";
+    }
+
+    if (selectTipoDado) {
+        selectTipoDado.value = tipoDado;
+        selectTipoDado.disabled = !souHost;
+    }
+
     if (souHost) {
         btnIniciarPartida.style.display = "block";
 
@@ -1956,6 +1992,7 @@ btnIniciarPartida.addEventListener("click", () => {
 });
 
 const selectModoJogo = document.getElementById("select-modo-jogo");
+const selectTipoDado = document.getElementById("select-tipo-dado");
 
 if (selectModoJogo) {
     selectModoJogo.addEventListener("change", () => {
@@ -1967,6 +2004,23 @@ if (selectModoJogo) {
         socket.emit("definirModoJogo", {
             codigo: salaAtual,
             modo: modo
+        });
+    });
+}
+
+if (selectTipoDado) {
+    selectTipoDado.addEventListener("change", () => {
+        if (!souHost || !salaAtual) {
+            selectTipoDado.value = tipoDado;
+            return;
+        }
+
+        const tipo = selectTipoDado.value;
+        tipoDado = tipo;
+
+        socket.emit("definirTipoDado", {
+            codigo: salaAtual,
+            tipo: tipo
         });
     });
 }
@@ -1988,8 +2042,28 @@ socket.on("modoJogoAtualizado", (modo) => {
     mostrarAviso(`🎮 Modo alterado para: ${nomesModos[modo] || modo}`);
 });
 
+socket.on("tipoDadoAtualizado", (tipo) => {
+    tipoDado = tipo;
+
+    const selectTipo = document.getElementById("select-tipo-dado");
+
+    if (selectTipo) {
+        selectTipo.value = tipo;
+    }
+
+    const nomesTipos = {
+        "normal": "Dado Normal",
+        "balanceado": "Dado Balanceado"
+    };
+
+    mostrarAviso(`Tipo de dado alterado para: ${nomesTipos[tipo] || tipo}`);
+});
+
 socket.on("partidaIniciada", () => {
     telaLobby.style.display = "none";
+    if (selectTipoDado) {
+        selectTipoDado.disabled = true;
+    }
     mostrarAviso("🎲 Partida iniciada!");
     iniciarTimerAFK();
 });
@@ -2010,6 +2084,7 @@ function aplicarEstadoOnline(estado) {
     seisSeguidos = estado.seisSeguidos || 0;
     turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
     modoJogo = estado.modoJogo || modoJogo;
+    tipoDado = estado.tipoDado || tipoDado;
 
     turnosPresoBase.forEach((quantidade, jogador) => {
         if (quantidade === turnosPresoAnteriores[jogador] + 1) {
