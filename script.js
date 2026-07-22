@@ -1713,16 +1713,6 @@ atualizarPainel();
 info.textContent = `Vez de ${nomes[jogadorAtual]}.`;
 iniciarTimerAFK();
 
-// Exibir tabuleiro X5 automaticamente (modo de desenvolvimento)
-const tabuleiroX5 = document.getElementById("tabuleiro-x5");
-const tabuleiroClassico = document.getElementById("tabuleiro");
-if (tabuleiroX5) {
-    tabuleiroX5.style.display = "block";
-}
-if (tabuleiroClassico) {
-    tabuleiroClassico.style.display = "none";
-}
-
 setTimeout(() => {
     organizarTodasAsCasas();
 }, 500);
@@ -2083,11 +2073,124 @@ btnIniciarPartida.addEventListener("click", () => {
 const selectModoJogo = document.getElementById("select-modo-jogo");
 const selectTipoDado = document.getElementById("select-tipo-dado");
 
+// Função centralizada para controlar a alternância visual dos tabuleiros
+function alternarVisualTabuleiro(modo) {
+    const tabuleiroClassico = document.getElementById("tabuleiro");
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+
+    if (modo === "x5") {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
+        if (tabuleiroX5) {
+            tabuleiroX5.style.display = "block";
+            desenharMarcadoresDebugX5();
+        }
+    } else {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "grid";
+        if (tabuleiroX5) {
+            tabuleiroX5.style.display = "none";
+            removerMarcadoresDebugX5();
+        }
+    }
+}
+
+// Visualização de depuração ativada somente com ?debugX5=1 na URL
+function desenharMarcadoresDebugX5() {
+    removerMarcadoresDebugX5();
+    
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("debugX5") !== "1") return;
+
+    const container = document.getElementById("container-pecas-x5");
+    if (!container) return;
+
+    // Coordenadas das bases dos 5 jogadores
+    const debugBases = {
+        player1: {
+            cor: "red",
+            base: [
+                { x: 15.5, y: 18.2 },
+                { x: 19.8, y: 15.1 },
+                { x: 24.1, y: 18.2 },
+                { x: 17.1, y: 23.3 },
+                { x: 22.5, y: 23.3 }
+            ]
+        },
+        player2: {
+            cor: "blue",
+            base: [
+                { x: 74.5, y: 18.2 },
+                { x: 78.8, y: 15.1 },
+                { x: 83.1, y: 18.2 },
+                { x: 76.1, y: 23.3 },
+                { x: 81.5, y: 23.3 }
+            ]
+        },
+        player3: {
+            cor: "green",
+            base: [
+                { x: 89.2, y: 64.5 },
+                { x: 93.5, y: 61.4 },
+                { x: 91.5, y: 69.6 },
+                { x: 86.2, y: 69.6 },
+                { x: 85.0, y: 61.4 }
+            ]
+        },
+        player4: {
+            cor: "yellow",
+            base: [
+                { x: 47.8, y: 88.5 },
+                { x: 52.2, y: 88.5 },
+                { x: 50.0, y: 84.1 },
+                { x: 45.5, y: 92.9 },
+                { x: 54.5, y: 92.9 }
+            ]
+        },
+        player5: {
+            cor: "purple",
+            base: [
+                { x: 6.5, y: 61.4 },
+                { x: 10.8, y: 64.5 },
+                { x: 8.5, y: 69.6 },
+                { x: 13.8, y: 69.6 },
+                { x: 15.0, y: 61.4 }
+            ]
+        }
+    };
+
+    Object.entries(debugBases).forEach(([player, info]) => {
+        info.base.forEach((coord, i) => {
+            const marcador = document.createElement("div");
+            marcador.classList.add("marcador-debug-x5");
+            marcador.style.position = "absolute";
+            marcador.style.left = `${coord.x}%`;
+            marcador.style.top = `${coord.y}%`;
+            marcador.style.width = "12px";
+            marcador.style.height = "12px";
+            marcador.style.borderRadius = "50%";
+            marcador.style.border = "2px solid white";
+            marcador.style.backgroundColor = info.cor;
+            marcador.style.transform = "translate(-50%, -50%)";
+            marcador.style.zIndex = "999";
+            marcador.title = `${player} - Base ${i + 1}`;
+            container.appendChild(marcador);
+        });
+    });
+}
+
+function removerMarcadoresDebugX5() {
+    document.querySelectorAll(".marcador-debug-x5").forEach(el => el.remove());
+}
+
+
 if (selectModoJogo) {
     selectModoJogo.addEventListener("change", () => {
+        const modo = selectModoJogo.value;
+        
+        // Permite alternar visualmente no seletor de modo mesmo antes de salvar no servidor ou para visualização do host
+        alternarVisualTabuleiro(modo);
+
         if (!souHost || !salaAtual) return;
 
-        const modo = selectModoJogo.value;
         modoJogo = modo;
 
         socket.emit("definirModoJogo", {
@@ -2123,17 +2226,8 @@ socket.on("modoJogoAtualizado", (modo) => {
         selectModo.value = modo;
     }
 
-    // Alternar entre tabuleiro clássico e X5
-    const tabuleiroClassico = document.getElementById("tabuleiro");
-    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
-
-    if (modo === "x5") {
-        if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
-        if (tabuleiroX5) tabuleiroX5.style.display = "block";
-    } else {
-        if (tabuleiroClassico) tabuleiroClassico.style.display = "grid";
-        if (tabuleiroX5) tabuleiroX5.style.display = "none";
-    }
+    // Alternar entre tabuleiro clássico e X5 usando a função centralizada
+    alternarVisualTabuleiro(modo);
 
     const nomesModos = {
         "classico": "Ludo Clássico",
