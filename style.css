@@ -836,3 +836,15 @@ box-shadow: none;
         0 0 70px rgba(255,255,255,0.5),
         0 10px 25px rgba(0,0,0,0.65) !important;
 }
+
+.card-roxo {
+    border-color: #9d4edd !important;
+}
+
+.card-roxo .avatar-jogador {
+    color: #9d4edd;
+}
+
+.painel-roxo {
+    background: linear-gradient(145deg, #9d4edd, #6a30b0) !important;
+}

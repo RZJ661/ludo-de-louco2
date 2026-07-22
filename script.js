@@ -36,8 +36,8 @@ function obterJogadoresMaximos(modoId) {
     return modo.jogadoresMaximos;
 }
 
-const nomes = ["Vermelho", "Azul", "Amarelo", "Verde"];
-const classesPainel = ["painel-vermelho", "painel-azul", "painel-amarelo", "painel-verde"];
+const nomes = ["Vermelho", "Azul", "Amarelo", "Verde", "Roxo"];
+const classesPainel = ["painel-vermelho", "painel-azul", "painel-amarelo", "painel-verde", "painel-roxo"];
 
 let modoADM = false;
 let admPublico = false;
@@ -45,7 +45,7 @@ let admPublico = false;
 let jogadorAtual = 0;
 
 let ranking = [];
-let jogadoresFinalizados = [false, false, false, false];
+let jogadoresFinalizados = [false, false, false, false, false];
 
 const socket = io();
 
@@ -97,7 +97,7 @@ let hallDaFama = JSON.parse(
     localStorage.getItem("hallDaFama")
 ) || [0, 0, 0, 0];
 
-let jogadoresProntos = [false, false, false, false];
+let jogadoresProntos = [false, false, false, false, false];
 
 let timerToast = null;
 
@@ -124,7 +124,7 @@ let progresso = [
     [-1, -1, -1, -1]
 ];
 
-let turnosPresoBase = [0, 0, 0, 0];
+let turnosPresoBase = [0, 0, 0, 0, 0];
 
 const mensagensPresoBase = {
     3: "😅 Tá difícil sair da base...",
@@ -235,7 +235,7 @@ function pararTodosOsSons() {
     audiosTocando = [];
 }
 
-let afkSeguidos = [0, 0, 0, 0];
+let afkSeguidos = [0, 0, 0, 0, 0];
 
 let jogadaAutomatica = false;
 
@@ -1627,11 +1627,12 @@ function atualizarPainel() {
     card.classList.remove("aguardando-dado");
 });
 
-    painelJogador.classList.remove(
+painelJogador.classList.remove(
         "painel-vermelho",
         "painel-azul",
         "painel-amarelo",
-        "painel-verde"
+        "painel-verde",
+        "painel-roxo"
     );
 
     painelJogador.classList.add(classesPainel[jogadorAtual]);
@@ -1985,6 +1986,12 @@ function atualizarPainelSala(jogadores) {
         `;
     }).join("");
 
+    // Show/hide 5th player card based on mode
+    const cardRoxo = document.querySelector('.card-jogador[data-jogador="4"]');
+    if (cardRoxo) {
+        cardRoxo.style.display = limiteJogadores >= 5 ? "block" : "none";
+    }
+
     const seletorTipoDado = document.getElementById("seletor-tipo-dado");
     const selectTipoDado = document.getElementById("select-tipo-dado");
 
@@ -2123,7 +2130,7 @@ function aplicarEstadoOnline(estado) {
     dadosPendentes = estado.dadosPendentes || [];
     bonusGiros = estado.bonusGiros || 0;
     seisSeguidos = estado.seisSeguidos || 0;
-    turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
+turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0, 0];
     modoJogo = estado.modoJogo || modoJogo;
     tipoDado = estado.tipoDado || tipoDado;
 
