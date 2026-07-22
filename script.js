@@ -2103,62 +2103,65 @@ function desenharMarcadoresDebugX5() {
     const container = document.getElementById("container-pecas-x5");
     if (!container) return;
 
-    // Coordenadas das bases dos 5 jogadores
-    const debugBases = {
-        player1: {
-            cor: "red",
-            base: [
-                { x: 15.5, y: 18.2 },
-                { x: 19.8, y: 15.1 },
-                { x: 24.1, y: 18.2 },
-                { x: 17.1, y: 23.3 },
-                { x: 22.5, y: 23.3 }
-            ]
-        },
-        player2: {
-            cor: "blue",
-            base: [
-                { x: 74.5, y: 18.2 },
-                { x: 78.8, y: 15.1 },
-                { x: 83.1, y: 18.2 },
-                { x: 76.1, y: 23.3 },
-                { x: 81.5, y: 23.3 }
-            ]
-        },
-        player3: {
-            cor: "green",
-            base: [
-                { x: 89.2, y: 64.5 },
-                { x: 93.5, y: 61.4 },
-                { x: 91.5, y: 69.6 },
-                { x: 86.2, y: 69.6 },
-                { x: 85.0, y: 61.4 }
-            ]
-        },
-        player4: {
-            cor: "yellow",
-            base: [
-                { x: 47.8, y: 88.5 },
-                { x: 52.2, y: 88.5 },
-                { x: 50.0, y: 84.1 },
-                { x: 45.5, y: 92.9 },
-                { x: 54.5, y: 92.9 }
-            ]
-        },
-        player5: {
-            cor: "purple",
-            base: [
-                { x: 6.5, y: 61.4 },
-                { x: 10.8, y: 64.5 },
-                { x: 8.5, y: 69.6 },
-                { x: 13.8, y: 69.6 },
-                { x: 15.0, y: 61.4 }
-            ]
-        }
+    // Coordenadas das bases dos 5 jogadores obtidas dinamicamente da configuração centralizada do X5
+    const configX5 = obterModoJogo("x5");
+    if (!configX5 || !configX5.jogadores) return;
+
+    // Cores em português mapeadas para CSS colors válidas para os marcadores de debug
+    const mapaCoresCss = {
+        "vermelho": "red",
+        "azul": "blue",
+        "verde": "green",
+        "amarelo": "yellow",
+        "roxo": "purple"
     };
 
-    Object.entries(debugBases).forEach(([player, info]) => {
-        info.base.forEach((coord, i) => {
+    // Coordenadas associadas aos jogadores
+    const baseCoords = {
+        player1: [
+            { x: 47.8, y: 88.5 },
+            { x: 52.2, y: 88.5 },
+            { x: 50.0, y: 84.1 },
+            { x: 45.5, y: 92.9 },
+            { x: 54.5, y: 92.9 }
+        ],
+        player2: [
+            { x: 6.5, y: 61.4 },
+            { x: 10.8, y: 64.5 },
+            { x: 8.5, y: 69.6 },
+            { x: 13.8, y: 69.6 },
+            { x: 15.0, y: 61.4 }
+        ],
+        player3: [
+            { x: 15.5, y: 18.2 },
+            { x: 19.8, y: 15.1 },
+            { x: 24.1, y: 18.2 },
+            { x: 17.1, y: 23.3 },
+            { x: 22.5, y: 23.3 }
+        ],
+        player4: [
+            { x: 74.5, y: 18.2 },
+            { x: 78.8, y: 15.1 },
+            { x: 83.1, y: 18.2 },
+            { x: 76.1, y: 23.3 },
+            { x: 81.5, y: 23.3 }
+        ],
+        player5: [
+            { x: 89.2, y: 64.5 },
+            { x: 93.5, y: 61.4 },
+            { x: 91.5, y: 69.6 },
+            { x: 86.2, y: 69.6 },
+            { x: 85.0, y: 61.4 }
+        ]
+    };
+
+    configX5.jogadores.forEach((jogador) => {
+        const coords = baseCoords[jogador.id];
+        if (!coords) return;
+
+        const corCss = mapaCoresCss[jogador.cor] || "white";
+
+        coords.forEach((coord, i) => {
             const marcador = document.createElement("div");
             marcador.classList.add("marcador-debug-x5");
             marcador.style.position = "absolute";
@@ -2168,10 +2171,10 @@ function desenharMarcadoresDebugX5() {
             marcador.style.height = "12px";
             marcador.style.borderRadius = "50%";
             marcador.style.border = "2px solid white";
-            marcador.style.backgroundColor = info.cor;
+            marcador.style.backgroundColor = corCss;
             marcador.style.transform = "translate(-50%, -50%)";
             marcador.style.zIndex = "999";
-            marcador.title = `${player} - Base ${i + 1}`;
+            marcador.title = `${jogador.id} (${jogador.cor}) - Base ${i + 1}`;
             container.appendChild(marcador);
         });
     });
