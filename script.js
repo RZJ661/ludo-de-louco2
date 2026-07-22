@@ -1,4 +1,5 @@
 // Sistema central de modos de jogo
+// Configuração do modo X5 (usando player IDs)
 const modosJogo = {
     classico: {
         id: "classico",
@@ -6,7 +7,15 @@ const modosJogo = {
         emoji: "🎲",
         jogadoresMaximos: 4,
         tabuleiro: "classic",
-        casasSeguras: true
+        casasSeguras: true,
+        emDesenvolvimento: false,
+        jogadores: [
+            { id: "player1", cor: "vermelho" },
+            { id: "player2", cor: "azul" },
+            { id: "player3", cor: "amarelo" },
+            { id: "player4", cor: "verde" }
+        ],
+        pecasPorJogador: 4
     },
     semCasasSeguras: {
         id: "semCasasSeguras",
@@ -14,16 +23,32 @@ const modosJogo = {
         emoji: "💥",
         jogadoresMaximos: 4,
         tabuleiro: "classic",
-        casasSeguras: false
+        casasSeguras: false,
+        emDesenvolvimento: false,
+        jogadores: [
+            { id: "player1", cor: "vermelho" },
+            { id: "player2", cor: "azul" },
+            { id: "player3", cor: "amarelo" },
+            { id: "player4", cor: "verde" }
+        ],
+        pecasPorJogador: 4
     },
-    cincoJogadores: {
-        id: "cincoJogadores",
-        nome: "Ludo 5 Jogadores",
+x5: {
+        id: "x5",
+        nome: "Ludo X5",
         emoji: "⭐",
         jogadoresMaximos: 5,
-        tabuleiro: "fivePlayers",
+        tabuleiro: "x5",
         casasSeguras: true,
-        emDesenvolvimento: true
+        emDesenvolvimento: true,
+        jogadores: [
+            { id: "player1", cor: "vermelho" },
+            { id: "player2", cor: "azul" },
+            { id: "player3", cor: "verde" },
+            { id: "player4", cor: "amarelo" },
+            { id: "player5", cor: "roxo" }
+        ],
+        pecasPorJogador: 5
     }
 };
 
@@ -350,7 +375,7 @@ let bases = basesClassic;
 function aplicarTabuleiro(modo) {
     const modoConfig = obterModoJogo(modo);
     
-    if (modoConfig.tabuleiro === "fivePlayers") {
+    if (modoConfig.tabuleiro === "x5") {
         caminho = caminhoCincoJogadores;
         indicesSaida = indicesSaidaCincoJogadores;
         retasFinais = retasFinaisCincoJogadores;
@@ -2144,7 +2169,7 @@ socket.on("modoJogoAtualizado", (modo) => {
     const nomesModos = {
         "classico": "Ludo Clássico",
         "semCasasSeguras": "Sem Casas Seguras",
-        "cincoJogadores": "Ludo 5 Jogadores"
+        "x5": "Ludo X5"
     };
 
     mostrarAviso(`🎮 Modo alterado para: ${nomesModos[modo] || modo}`);

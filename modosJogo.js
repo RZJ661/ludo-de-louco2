@@ -1,30 +1,22 @@
 // Sistema central de modos de jogo
+// Importa as configurações dos modos
+const { configuracao: classico } = require("./modos/classico");
+const { configuracao: x5 } = require("./modos/x5");
+
+// Modo semCasasSeguras herda do clássico com casasSeguras: false
+const semCasasSeguras = {
+    ...classico,
+    id: "semCasasSeguras",
+    nome: "Sem Casas Seguras",
+    emoji: "💥",
+    casasSeguras: false,
+    emDesenvolvimento: false
+};
+
 const modosJogo = {
-    classico: {
-        id: "classico",
-        nome: "Ludo Clássico",
-        emoji: "🎲",
-        jogadoresMaximos: 4,
-        tabuleiro: "classic",
-        casasSeguras: true
-    },
-    semCasasSeguras: {
-        id: "semCasasSeguras",
-        nome: "Sem Casas Seguras",
-        emoji: "💥",
-        jogadoresMaximos: 4,
-        tabuleiro: "classic",
-        casasSeguras: false
-    },
-    cincoJogadores: {
-        id: "cincoJogadores",
-        nome: "Ludo 5 Jogadores",
-        emoji: "⭐",
-        jogadoresMaximos: 5,
-        tabuleiro: "fivePlayers",
-        casasSeguras: true,
-        emDesenvolvimento: true
-    }
+    classico,
+    semCasasSeguras,
+    x5
 };
 
 function obterModoJogo(id) {
