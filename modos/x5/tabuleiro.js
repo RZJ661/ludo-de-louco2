@@ -3,24 +3,53 @@
 // Atualmente é um placeholder para a arquitetura
 
 const tabuleiro = {
-    // Caminho principal (5 cores)
+    // Caminho principal (5 cores) - coordenadas em porcentagem
     caminho: [],
     
-    // Índices de saída para cada jogador
+    // Índices de saída para cada jogador (em porcentagem)
     indicesSaida: [0, 0, 0, 0, 0],
     
-    // Retas finais (5 cores)
+    // Retas finais (5 cores) - coordenadas em porcentagem
     retasFinais: [
         [], [], [], [], []
     ],
     
-    // Casas seguras
+    // Casas seguras - coordenadas em porcentagem
     casasSeguras: [],
     
-    // Bases (5 cores)
+    // Bases (5 cores) - coordenadas em porcentagem
     bases: [
         [], [], [], [], []
     ]
 };
 
-module.exports = { tabuleiro };
+// Estrutura de coordenadas por jogador (player IDs)
+const coordenadas = {
+    player1: {
+        cor: "vermelho",
+        base: [],
+        caminho: []
+    },
+    player2: {
+        cor: "azul",
+        base: [],
+        caminho: []
+    },
+    player3: {
+        cor: "verde",
+        base: [],
+        caminho: []
+    },
+    player4: {
+        cor: "amarelo",
+        base: [],
+        caminho: []
+    },
+    player5: {
+        cor: "roxo",
+        base: [],
+        caminho: []
+    }
+};
+
+module.exports = { tabuleiro, coordenadas };

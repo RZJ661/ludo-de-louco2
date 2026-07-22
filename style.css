@@ -856,3 +856,27 @@ box-shadow: none;
 .painel-roxo {
     background: linear-gradient(145deg, #9d4edd, #6a30b0) !important;
 }
+
+/* Tabuleiro X5 - Visualização de desenvolvimento */
+#tabuleiro-x5 {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#img-tabuleiro-x5 {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+}
+
+#container-pecas-x5 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
