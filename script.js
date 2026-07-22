@@ -1,3 +1,41 @@
+// Sistema central de modos de jogo
+const modosJogo = {
+    classico: {
+        id: "classico",
+        nome: "Ludo Clássico",
+        emoji: "🎲",
+        jogadoresMaximos: 4,
+        tabuleiro: "classic",
+        casasSeguras: true
+    },
+    semCasasSeguras: {
+        id: "semCasasSeguras",
+        nome: "Sem Casas Seguras",
+        emoji: "💥",
+        jogadoresMaximos: 4,
+        tabuleiro: "classic",
+        casasSeguras: false
+    },
+    cincoJogadores: {
+        id: "cincoJogadores",
+        nome: "Ludo 5 Jogadores",
+        emoji: "⭐",
+        jogadoresMaximos: 5,
+        tabuleiro: "fivePlayers",
+        casasSeguras: true,
+        emDesenvolvimento: true
+    }
+};
+
+function obterModoJogo(id) {
+    return modosJogo[id] || modosJogo.classico;
+}
+
+function obterJogadoresMaximos(modoId) {
+    const modo = obterModoJogo(modoId);
+    return modo.jogadoresMaximos;
+}
+
 const nomes = ["Vermelho", "Azul", "Amarelo", "Verde"];
 const classesPainel = ["painel-vermelho", "painel-azul", "painel-amarelo", "painel-verde"];
 
@@ -1074,7 +1112,8 @@ function verificarCaptura(jogador, pecaIndex) {
 
     const posicaoGlobal = (indicesSaida[jogador] + prog) % caminho.length;
 
-    if (modoJogo === "classico" && casasSeguras.includes(posicaoGlobal)) {
+    const modo = obterModoJogo(modoJogo);
+    if (modo.casasSeguras && casasSeguras.includes(posicaoGlobal)) {
         return false;
     }
 
@@ -1934,13 +1973,14 @@ function atualizarPainelSala(jogadores) {
     painelSala.style.display = "block";
 
     codigoSalaOnline.textContent = salaAtual || "----";
-    contadorJogadoresOnline.textContent = `Jogadores: ${jogadores.length}/4`;
+    const limiteJogadores = obterJogadoresMaximos(modoJogo);
+    contadorJogadoresOnline.textContent = `Jogadores: ${jogadores.length}/${limiteJogadores}`;
 
     listaJogadoresOnline.innerHTML = jogadores.map((j, i) => {
         return `
             <div class="jogador-online">
                 <strong>${j.avatar} ${j.nick}</strong>
-                <span>${nomes[i]}</span>
+                <span>${nomes[i] || i}</span>
             </div>
         `;
     }).join("");
@@ -2036,7 +2076,8 @@ socket.on("modoJogoAtualizado", (modo) => {
 
     const nomesModos = {
         "classico": "Ludo Clássico",
-        "semCasasSeguras": "Sem Casas Seguras"
+        "semCasasSeguras": "Sem Casas Seguras",
+        "cincoJogadores": "Ludo 5 Jogadores"
     };
 
     mostrarAviso(`🎮 Modo alterado para: ${nomesModos[modo] || modo}`);

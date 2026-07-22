@@ -1,6 +1,7 @@
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const { modosJogo, obterModoJogo, obterJogadoresMaximos, modoPermitidoIniciar } = require("./modosJogo");
 
 const app = express();
 const server = http.createServer(app);
@@ -145,7 +146,8 @@ if (nickExiste) {
     return;
 }
 
-        if (salas[codigo].jogadores.length >= 4) {
+        const limiteJogadores = obterJogadoresMaximos(salas[codigo].modoJogo);
+        if (salas[codigo].jogadores.length >= limiteJogadores) {
             socket.emit("erroSala", "Sala cheia!");
             return;
         }
@@ -192,6 +194,11 @@ if (nickExiste) {
     return;
 }
 
+        if (!modoPermitidoIniciar(sala.modoJogo)) {
+    socket.emit("erroSala", "Modo em desenvolvimento!");
+    return;
+}
+
         sala.partidaIniciada = true;
         io.to(codigo).emit("partidaIniciada");
     });
@@ -206,7 +213,7 @@ if (nickExiste) {
             return;
         }
 
-        if (dados.modo !== "classico" && dados.modo !== "semCasasSeguras") {
+        if (!modosJogo[dados.modo]) {
             socket.emit("erroSala", "Modo inválido!");
             return;
         }
