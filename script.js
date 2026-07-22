@@ -290,7 +290,8 @@ const facesDado = {
     6: "⚅"
 };
 
-const caminho = [
+// Tabuleiro Clássico (4 jogadores)
+const caminhoClassic = [
     { r: 6, c: 1 }, { r: 6, c: 2 }, { r: 6, c: 3 }, { r: 6, c: 4 }, { r: 6, c: 5 },
     { r: 5, c: 6 }, { r: 4, c: 6 }, { r: 3, c: 6 }, { r: 2, c: 6 }, { r: 1, c: 6 }, { r: 0, c: 6 },
     { r: 0, c: 7 }, { r: 0, c: 8 },
@@ -305,23 +306,64 @@ const caminho = [
     { r: 7, c: 0 }, { r: 6, c: 0 }
 ];
 
-const indicesSaida = [0, 13, 26, 39];
+const indicesSaidaClassic = [0, 13, 26, 39];
 
-const retasFinais = [
+const retasFinaisClassic = [
     [{ r: 7, c: 1 }, { r: 7, c: 2 }, { r: 7, c: 3 }, { r: 7, c: 4 }, { r: 7, c: 5 }],
     [{ r: 1, c: 7 }, { r: 2, c: 7 }, { r: 3, c: 7 }, { r: 4, c: 7 }, { r: 5, c: 7 }],
     [{ r: 7, c: 13 }, { r: 7, c: 12 }, { r: 7, c: 11 }, { r: 7, c: 10 }, { r: 7, c: 9 }],
     [{ r: 13, c: 7 }, { r: 12, c: 7 }, { r: 11, c: 7 }, { r: 10, c: 7 }, { r: 9, c: 7 }]
 ];
 
-const casasSeguras = [0, 13, 26, 39, 47, 8, 21, 34];
+const casasSegurasClassic = [0, 13, 26, 39, 47, 8, 21, 34];
 
-const bases = [
+const basesClassic = [
     [{ r: 1, c: 1 }, { r: 1, c: 3 }, { r: 3, c: 1 }, { r: 3, c: 3 }],
     [{ r: 1, c: 11 }, { r: 1, c: 13 }, { r: 3, c: 11 }, { r: 3, c: 13 }],
     [{ r: 11, c: 11 }, { r: 11, c: 13 }, { r: 13, c: 11 }, { r: 13, c: 13 }],
     [{ r: 11, c: 1 }, { r: 11, c: 3 }, { r: 13, c: 1 }, { r: 13, c: 3 }]
 ];
+
+// Tabuleiro 5 Jogadores (placeholders)
+const caminhoCincoJogadores = [];
+
+const indicesSaidaCincoJogadores = [0, 0, 0, 0, 0];
+
+const retasFinaisCincoJogadores = [
+    [], [], [], [], []
+];
+
+const casasSegurasCincoJogadores = [];
+
+const basesCincoJogadores = [
+    [], [], [], [], []
+];
+
+// Variáveis ativas (usadas pelo jogo)
+let caminho = caminhoClassic;
+let indicesSaida = indicesSaidaClassic;
+let retasFinais = retasFinaisClassic;
+let casasSeguras = casasSegurasClassic;
+let bases = basesClassic;
+
+// Função para aplicar a configuração do tabuleiro baseado no modo
+function aplicarTabuleiro(modo) {
+    const modoConfig = obterModoJogo(modo);
+    
+    if (modoConfig.tabuleiro === "fivePlayers") {
+        caminho = caminhoCincoJogadores;
+        indicesSaida = indicesSaidaCincoJogadores;
+        retasFinais = retasFinaisCincoJogadores;
+        casasSeguras = casasSegurasCincoJogadores;
+        bases = basesCincoJogadores;
+    } else {
+        caminho = caminhoClassic;
+        indicesSaida = indicesSaidaClassic;
+        retasFinais = retasFinaisClassic;
+        casasSeguras = casasSegurasClassic;
+        bases = basesClassic;
+    }
+}
 
 function pegarCasa(r, c) {
     return document.querySelector(`.casa[data-row="${r}"][data-col="${c}"]`);
@@ -1105,6 +1147,21 @@ function destacarPecasValidas(jogador, jogadas) {
     }
 }
 
+function destacarPecasValidas5Jogadores(jogador, jogadas) {
+    limparDestaquePecas();
+
+    for (let p = 0; p < 4; p++) {
+        const peca = pecasDOM[jogador] && pecasDOM[jogador][p];
+        if (!peca) continue;
+
+        if (jogadas.includes(p)) {
+            peca.classList.add("valida");
+        } else {
+            peca.classList.add("invalida");
+        }
+    }
+}
+
 function verificarCaptura(jogador, pecaIndex) {
     const prog = progresso[jogador][pecaIndex];
 
@@ -1119,7 +1176,7 @@ function verificarCaptura(jogador, pecaIndex) {
 
     let capturou = false;
 
-    for (let outroJogador = 0; outroJogador < 4; outroJogador++) {
+    for (let outroJogador = 0; outroJogador < 5; outroJogador++) {
         if (outroJogador === jogador) continue;
 
         for (let outraPeca = 0; outraPeca < 4; outraPeca++) {
@@ -1167,7 +1224,7 @@ if (salaAtual) {
     `🤣 Que fase, meus amigos.`,
     `💀 Voltei mais rápido do que saí.`,
     `🏠 O Uber da base chegou.`,
-    `🚑 Chamem reforços.`,
+    `🚑 Chamem reforças.`,
     `😡 Isso não vai ficar assim.`,
     `🐂 O cara veio com sangue nos olhos.`,
     `🔥 Tá achando que é quem?`,
@@ -1432,7 +1489,7 @@ return;
 
     do {
         jogadorAtual++;
-        if (jogadorAtual > 3) jogadorAtual = 0;
+        if (jogadorAtual > 4) jogadorAtual = 0;
     } while (jogadoresFinalizados[jogadorAtual]);
 
 turnoTexto.textContent = nomes[jogadorAtual];
@@ -2074,6 +2131,9 @@ if (selectTipoDado) {
 
 socket.on("modoJogoAtualizado", (modo) => {
     modoJogo = modo;
+    
+    // Aplicar configuração do tabuleiro
+    aplicarTabuleiro(modo);
 
     const selectModo = document.getElementById("select-modo-jogo");
 
@@ -2141,7 +2201,7 @@ turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0, 0];
         }
     });
 
-    for (let j = 0; j < 4; j++) {
+    for (let j = 0; j < 5; j++) {
         for (let p = 0; p < 4; p++) {
             renderizarPeca(j, p);
         }

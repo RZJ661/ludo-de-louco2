@@ -223,6 +223,14 @@ box-shadow: none;
     #e0a800 85%);
 }
 
+.roxo {
+    background:
+    radial-gradient(circle at 30% 30%,
+    #ffffff,
+    #b57aff 18%,
+    #7a30c9 85%);
+}
+
 .peca.andando {
     animation: pulinhoPeca 0.28s ease;
 }
