@@ -863,6 +863,7 @@ box-shadow: none;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
+    display: none;
 }
 
 #img-tabuleiro-x5 {

@@ -1713,6 +1713,16 @@ atualizarPainel();
 info.textContent = `Vez de ${nomes[jogadorAtual]}.`;
 iniciarTimerAFK();
 
+// Exibir tabuleiro X5 automaticamente (modo de desenvolvimento)
+const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+const tabuleiroClassico = document.getElementById("tabuleiro");
+if (tabuleiroX5) {
+    tabuleiroX5.style.display = "block";
+}
+if (tabuleiroClassico) {
+    tabuleiroClassico.style.display = "none";
+}
+
 setTimeout(() => {
     organizarTodasAsCasas();
 }, 500);
@@ -2111,6 +2121,18 @@ socket.on("modoJogoAtualizado", (modo) => {
 
     if (selectModo) {
         selectModo.value = modo;
+    }
+
+    // Alternar entre tabuleiro clássico e X5
+    const tabuleiroClassico = document.getElementById("tabuleiro");
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+
+    if (modo === "x5") {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
+        if (tabuleiroX5) tabuleiroX5.style.display = "block";
+    } else {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "grid";
+        if (tabuleiroX5) tabuleiroX5.style.display = "none";
     }
 
     const nomesModos = {

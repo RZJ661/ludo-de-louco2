@@ -24,29 +24,25 @@ const tabuleiro = {
 };
 
 // Estrutura de coordenadas por jogador (player IDs)
+// A cor já está centralizada na configuração do X5
 const coordenadas = {
     player1: {
-        cor: "vermelho",
         base: [],
         caminho: []
     },
     player2: {
-        cor: "azul",
         base: [],
         caminho: []
     },
     player3: {
-        cor: "verde",
         base: [],
         caminho: []
     },
     player4: {
-        cor: "amarelo",
         base: [],
         caminho: []
     },
     player5: {
-        cor: "roxo",
         base: [],
         caminho: []
     }
