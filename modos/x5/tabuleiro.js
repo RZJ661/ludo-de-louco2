@@ -1,8 +1,7 @@
 (() => {
-// Tabuleiro X5 - mapa visual das casas externas compartilhadas.
+// Tabuleiro X5 - estrutura de dados completa do tabuleiro.
 // As coordenadas são porcentagens relativas à imagem PNG oficial.
-// Nesta etapa são mapeadas somente as casas brancas. Os corredores coloridos
-// e a ordem de movimentação serão definidos depois da conferência visual.
+// A estrutura agora representa casas, retas finais, bases e pontos de entrada/saída.
 
 const CENTRO_TABULEIRO = { x: 50, y: 50 };
 
@@ -30,17 +29,6 @@ function criarSetorExterno(rotacao) {
     return CASAS_REFERENCIA_AMARELA.map((casa) => rotacionarPonto(casa, rotacao));
 }
 
-// Cada grupo contém apenas as casas brancas reais do seu setor visual.
-const casasExternasPorSetor = {
-    player4: criarSetorExterno(0),
-    player5: criarSetorExterno(72),
-    player1: criarSetorExterno(144),
-    player2: criarSetorExterno(216),
-    player3: criarSetorExterno(288)
-};
-
-const casasExternas = Object.values(casasExternasPorSetor).flat();
-
 // Corredor amarelo, da entrada externa em direção ao centro compartilhado.
 const RETA_FINAL_REFERENCIA_AMARELA = [
     { x: 50.3, y: 7.3 }, { x: 50.3, y: 13.0 }, { x: 50.3, y: 18.8 },
@@ -50,43 +38,6 @@ const RETA_FINAL_REFERENCIA_AMARELA = [
 function criarRetaFinal(rotacao) {
     return RETA_FINAL_REFERENCIA_AMARELA.map((casa) => rotacionarPonto(casa, rotacao));
 }
-
-// player1 a player5 permanecem os identificadores lógicos; a cor é somente visual.
-const retasFinaisPorJogador = {
-    player4: criarRetaFinal(0),
-    player5: criarRetaFinal(72),
-    player1: criarRetaFinal(144),
-    player2: criarRetaFinal(216),
-    player3: criarRetaFinal(288)
-};
-
-const tabuleiro = {
-    // Mapa visual das casas externas do tabuleiro X5.
-    caminhoPrincipal: [],
-    caminho: [],
-    casasExternas,
-    casasExternasPorSetor,
-    retasFinaisPorJogador,
-
-    // Ainda desativados: dependem da validação visual e da definição da ordem.
-    indicesSaida: {
-        player1: null,
-        player2: null,
-        player3: null,
-        player4: null,
-        player5: null
-    },
-
-    retasFinais: [
-        retasFinaisPorJogador.player1,
-        retasFinaisPorJogador.player2,
-        retasFinaisPorJogador.player3,
-        retasFinaisPorJogador.player4,
-        retasFinaisPorJogador.player5
-    ],
-    casasSeguras: [],
-    bases: [[], [], [], [], []]
-};
 
 // Coordenadas das cinco posições de base por jogador lógico.
 const coordenadas = {
@@ -125,6 +76,141 @@ const coordenadas = {
         ],
         caminho: []
     }
+};
+
+const jogadores = [
+    { id: "player1", cor: "vermelho" },
+    { id: "player2", cor: "azul" },
+    { id: "player3", cor: "verde" },
+    { id: "player4", cor: "amarelo" },
+    { id: "player5", cor: "roxo" }
+];
+
+let proximoId = 1;
+const casas = [];
+const casasExternasPorSetor = {};
+const retasFinaisPorJogador = {};
+const bases = {};
+const entradas = {};
+const saidas = {};
+
+function criarCasa({ x, y, tipo, segura, retaFinal, base, cor, jogadorId, ordem }) {
+    return {
+        id: proximoId++,
+        x,
+        y,
+        tipo,
+        segura,
+        retaFinal,
+        base,
+        cor,
+        jogadorId,
+        ordem
+    };
+}
+
+function registrarCasa(casa) {
+    casas.push(casa);
+    return casa;
+}
+
+jogadores.forEach((jogador, index) => {
+    const rotacao = index * 72;
+
+    const casasExternas = criarSetorExterno(rotacao).map((coord, ordem) => registrarCasa(criarCasa({
+        x: coord.x,
+        y: coord.y,
+        tipo: "normal",
+        segura: false,
+        retaFinal: false,
+        base: null,
+        cor: null,
+        jogadorId: jogador.id,
+        ordem: ordem + 1
+    })));
+
+    casasExternasPorSetor[jogador.id] = casasExternas;
+
+    const casaEntrada = casasExternas[0];
+    entradas[jogador.id] = {
+        id: `entrada-${jogador.id}`,
+        casaId: casaEntrada.id,
+        x: casaEntrada.x,
+        y: casaEntrada.y,
+        tipo: "entrada",
+        segura: false,
+        retaFinal: false,
+        base: null,
+        cor: jogador.cor,
+        jogadorId: jogador.id
+    };
+
+    const retaFinal = criarRetaFinal(rotacao).map((coord, ordem) => registrarCasa(criarCasa({
+        x: coord.x,
+        y: coord.y,
+        tipo: "retaFinal",
+        segura: true,
+        retaFinal: true,
+        base: null,
+        cor: jogador.cor,
+        jogadorId: jogador.id,
+        ordem: ordem + 1
+    })));
+
+    retasFinaisPorJogador[jogador.id] = retaFinal;
+
+    const casaSaida = retaFinal[0];
+    saidas[jogador.id] = {
+        id: `saida-${jogador.id}`,
+        casaId: casaSaida.id,
+        x: casaSaida.x,
+        y: casaSaida.y,
+        tipo: "saida",
+        segura: true,
+        retaFinal: true,
+        base: null,
+        cor: jogador.cor,
+        jogadorId: jogador.id
+    };
+
+    const casasBase = coordenadas[jogador.id].base.map((coord, ordem) => registrarCasa(criarCasa({
+        x: coord.x,
+        y: coord.y,
+        tipo: "base",
+        segura: false,
+        retaFinal: false,
+        base: jogador.id,
+        cor: jogador.cor,
+        jogadorId: jogador.id,
+        ordem: ordem + 1
+    })));
+
+    bases[jogador.id] = casasBase;
+});
+
+const casasExternas = Object.values(casasExternasPorSetor).flat();
+const casasSeguras = casas.filter((casa) => casa.segura);
+
+const tabuleiro = {
+    casas,
+    casasPorId: Object.fromEntries(casas.map((casa) => [casa.id, casa])),
+    caminhoPrincipal: [],
+    caminho: [],
+    casasExternas,
+    casasExternasPorSetor,
+    retasFinais: retasFinaisPorJogador,
+    retasFinaisPorJogador,
+    bases,
+    entradas,
+    saidas,
+    indicesSaida: {
+        player1: null,
+        player2: null,
+        player3: null,
+        player4: null,
+        player5: null
+    },
+    casasSeguras
 };
 
 const dadosTabuleiroX5 = { tabuleiro, coordenadas };
