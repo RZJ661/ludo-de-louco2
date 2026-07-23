@@ -916,7 +916,7 @@ body.preview-x5-active #painel-jogador {
 .preview-vermelho {
     left: 50%;
     top: 100%;
-    margin-top: 20px;
+    margin-top: -15px;
     transform: translateX(-50%);
     border-color: rgba(255, 91, 91, 0.55);
 }
