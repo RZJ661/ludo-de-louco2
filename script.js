@@ -2135,9 +2135,10 @@ function desenharMarcadoresDebugX5() {
     const debugX5 = params.get("debugX5") === "1";
     const debugRota = params.get("debugRota") === "1";
     const debugCasas = params.get("debugCasas") === "1";
+    const debugRetas = params.get("debugRetas") === "1";
     const debugBases = params.get("debugBases") === "1";
 
-    if (!debugX5 && !debugRota && !debugCasas && !debugBases) return;
+    if (!debugX5 && !debugRota && !debugCasas && !debugRetas && !debugBases) return;
 
     const container = document.getElementById("container-pecas-x5");
     if (!container) return;
@@ -2178,6 +2179,34 @@ function desenharMarcadoresDebugX5() {
             marcador.style.zIndex = "1000";
             marcador.title = `Casa externa ${i + 1}`;
             container.appendChild(marcador);
+        });
+    }
+
+    if (debugRetas) {
+        const retasFinais = dadosTabuleiroX5Debug.tabuleiro.retasFinaisPorJogador || {};
+
+        configX5.jogadores.forEach((jogador) => {
+            const reta = retasFinais[jogador.id];
+            if (!reta) return;
+
+            const corCss = mapaCoresCss[jogador.cor] || "white";
+
+            reta.forEach((coord, i) => {
+                const marcador = document.createElement("div");
+                marcador.classList.add("marcador-debug-x5");
+                marcador.style.position = "absolute";
+                marcador.style.left = `${coord.x}%`;
+                marcador.style.top = `${coord.y}%`;
+                marcador.style.width = "12px";
+                marcador.style.height = "12px";
+                marcador.style.borderRadius = "50%";
+                marcador.style.border = "2px solid white";
+                marcador.style.backgroundColor = corCss;
+                marcador.style.transform = "translate(-50%, -50%)";
+                marcador.style.zIndex = "1001";
+                marcador.title = `${jogador.id} - reta final ${i + 1}`;
+                container.appendChild(marcador);
+            });
         });
     }
 

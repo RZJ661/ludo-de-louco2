@@ -41,12 +41,32 @@ const casasExternasPorSetor = {
 
 const casasExternas = Object.values(casasExternasPorSetor).flat();
 
+// Corredor amarelo, da entrada externa em direção ao centro compartilhado.
+const RETA_FINAL_REFERENCIA_AMARELA = [
+    { x: 50.3, y: 7.3 }, { x: 50.3, y: 13.0 }, { x: 50.3, y: 18.8 },
+    { x: 50.3, y: 24.5 }, { x: 50.3, y: 30.2 }, { x: 50.3, y: 35.9 }
+];
+
+function criarRetaFinal(rotacao) {
+    return RETA_FINAL_REFERENCIA_AMARELA.map((casa) => rotacionarPonto(casa, rotacao));
+}
+
+// player1 a player5 permanecem os identificadores lógicos; a cor é somente visual.
+const retasFinaisPorJogador = {
+    player4: criarRetaFinal(0),
+    player5: criarRetaFinal(72),
+    player1: criarRetaFinal(144),
+    player2: criarRetaFinal(216),
+    player3: criarRetaFinal(288)
+};
+
 const tabuleiro = {
     // Mapa visual das casas externas do tabuleiro X5.
     caminhoPrincipal: [],
     caminho: [],
     casasExternas,
     casasExternasPorSetor,
+    retasFinaisPorJogador,
 
     // Ainda desativados: dependem da validação visual e da definição da ordem.
     indicesSaida: {
@@ -57,7 +77,13 @@ const tabuleiro = {
         player5: null
     },
 
-    retasFinais: [[], [], [], [], []],
+    retasFinais: [
+        retasFinaisPorJogador.player1,
+        retasFinaisPorJogador.player2,
+        retasFinaisPorJogador.player3,
+        retasFinaisPorJogador.player4,
+        retasFinaisPorJogador.player5
+    ],
     casasSeguras: [],
     bases: [[], [], [], [], []]
 };
