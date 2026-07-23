@@ -42,40 +42,42 @@ function criarRetaFinal(rotacao) {
 }
 
 // Coordenadas das cinco posições de base por jogador lógico.
-// Mantido para compatibilidade com o preview de depuração.
+// Cada base possui 5 posições em formato de diamante, centralizadas
+// nos círculos desenhados no tabuleiro X5.
+// As coordenadas são porcentagens relativas à imagem do tabuleiro.
 const coordenadas = {
     player1: {
         base: [
-            { x: 48.0, y: 85.0 }, { x: 52.0, y: 85.0 }, { x: 50.0, y: 81.0 },
-            { x: 46.0, y: 89.0 }, { x: 54.0, y: 89.0 }
+            { x: 48.0, y: 83.0 }, { x: 52.0, y: 83.0 }, { x: 50.0, y: 79.0 },
+            { x: 46.0, y: 87.0 }, { x: 54.0, y: 87.0 }
         ],
         caminho: []
     },
     player2: {
         base: [
-            { x: 10.0, y: 58.0 }, { x: 14.0, y: 61.0 }, { x: 12.0, y: 66.0 },
-            { x: 16.0, y: 66.0 }, { x: 18.0, y: 58.0 }
+            { x: 12.0, y: 57.0 }, { x: 16.0, y: 61.0 }, { x: 14.0, y: 65.0 },
+            { x: 10.0, y: 63.0 }, { x: 18.0, y: 59.0 }
         ],
         caminho: []
     },
     player3: {
         base: [
-            { x: 16.0, y: 16.0 }, { x: 20.0, y: 13.0 }, { x: 24.0, y: 16.0 },
-            { x: 18.0, y: 21.0 }, { x: 22.0, y: 21.0 }
+            { x: 18.0, y: 17.0 }, { x: 22.0, y: 13.0 }, { x: 26.0, y: 17.0 },
+            { x: 20.0, y: 21.0 }, { x: 24.0, y: 21.0 }
         ],
         caminho: []
     },
     player4: {
         base: [
-            { x: 76.0, y: 16.0 }, { x: 80.0, y: 13.0 }, { x: 84.0, y: 16.0 },
-            { x: 78.0, y: 21.0 }, { x: 82.0, y: 21.0 }
+            { x: 74.0, y: 17.0 }, { x: 78.0, y: 13.0 }, { x: 82.0, y: 17.0 },
+            { x: 76.0, y: 21.0 }, { x: 80.0, y: 21.0 }
         ],
         caminho: []
     },
     player5: {
         base: [
-            { x: 90.0, y: 58.0 }, { x: 94.0, y: 61.0 }, { x: 92.0, y: 66.0 },
-            { x: 88.0, y: 66.0 }, { x: 86.0, y: 58.0 }
+            { x: 86.0, y: 57.0 }, { x: 90.0, y: 61.0 }, { x: 94.0, y: 59.0 },
+            { x: 88.0, y: 65.0 }, { x: 92.0, y: 63.0 }
         ],
         caminho: []
     }
