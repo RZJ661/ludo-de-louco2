@@ -72,7 +72,7 @@ let admPublico = false;
 let jogadorAtual = 0;
 
 let ranking = [];
-let jogadoresFinalizados = [false, false, false, false];
+let jogadoresFinalizados = [false, false, false, false, false];
 
 const socket = previewX5Ativo ? {
     emit() {},
@@ -128,7 +128,7 @@ document.getElementById("hall-fama");
 
 let hallDaFama = JSON.parse(
     localStorage.getItem("hallDaFama")
-) || [0, 0, 0, 0];
+) || [0, 0, 0, 0, 0];
 
 let jogadoresProntos = [false, false, false, false];
 
@@ -148,16 +148,17 @@ function mostrarAviso(mensagem) {
     }, 1800);
 }
 
-let pecasDOM = [[], [], [], []];
+let pecasDOM = [[], [], [], [], []];
 
 let progresso = [
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1],
-    [-1, -1, -1, -1]
+    [-1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1]
 ];
 
-let turnosPresoBase = [0, 0, 0, 0];
+let turnosPresoBase = [0, 0, 0, 0, 0];
 
 const mensagensPresoBase = {
     3: "😅 Tá difícil sair da base...",
@@ -176,10 +177,11 @@ const mensagensPresoBase = {
 };
 
 let golsFeitos = [
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false],
-    [false, false, false, false]
+    [false, false, false, false, false],
+    [false, false, false, false, false],
+    [false, false, false, false, false],
+    [false, false, false, false, false],
+    [false, false, false, false, false]
 ];
 
 let dadosPendentes = [];
@@ -268,7 +270,7 @@ function pararTodosOsSons() {
     audiosTocando = [];
 }
 
-let afkSeguidos = [0, 0, 0, 0];
+let afkSeguidos = [0, 0, 0, 0, 0];
 
 let jogadaAutomatica = false;
 
@@ -1446,8 +1448,9 @@ function passarTurno() {
 
     limparTurno();
 
-    if (ranking.length >= 3) {
-    for (let i = 0; i < 4; i++) {
+    if (ranking.length >= obterJogadoresMaximos(modoJogo) - 1) {
+    const totalJogadores = obterJogadoresMaximos(modoJogo);
+    for (let i = 0; i < totalJogadores; i++) {
         if (!jogadoresFinalizados[i]) {
             jogadoresFinalizados[i] = true;
             ranking.push(i);
@@ -1472,7 +1475,7 @@ return;
 
     do {
         jogadorAtual++;
-        if (jogadorAtual > 3) jogadorAtual = 0;
+        if (jogadorAtual >= obterJogadoresMaximos(modoJogo)) jogadorAtual = 0;
     } while (jogadoresFinalizados[jogadorAtual]);
 
 turnoTexto.textContent = nomes[jogadorAtual];
@@ -1808,7 +1811,7 @@ if (admTurnoAnterior) {
 
         jogadorAtual--;
 
-        if (jogadorAtual < 0) jogadorAtual = 3;
+        if (jogadorAtual < 0) jogadorAtual = obterJogadoresMaximos(modoJogo) - 1;
 
         atualizarPainel();
         info.textContent = `ADM voltou para ${nomes[jogadorAtual]}.`;
