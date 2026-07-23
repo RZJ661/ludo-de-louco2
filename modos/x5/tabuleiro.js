@@ -225,7 +225,7 @@ const tabuleiro = {
     casas,
     casasPorId: Object.fromEntries(casas.map((casa) => [casa.id, casa])),
     caminhoPrincipal: [],
-    caminho: [],
+    caminho: casasExternas,
     casasExternas,
     casasExternasPorSetor,
     retasFinais: retasFinaisPorCor,
@@ -242,6 +242,77 @@ const tabuleiro = {
     },
     casasSeguras
 };
+
+// === Sistema de Movimentação de Teste (debug) ===
+// Este sistema valida o caminho externo do tabuleiro X5.
+// Será removido após validação.
+
+const pecaTeste = {
+    posicao: 0,
+    elemento: null
+};
+
+function criarPecaTeste() {
+    const container = document.getElementById("container-pecas-x5");
+    if (!container) return;
+
+    const peca = document.createElement("div");
+    peca.id = "peca-teste-x5";
+    peca.style.position = "absolute";
+    peca.style.width = "20px";
+    peca.style.height = "20px";
+    peca.style.borderRadius = "50%";
+    peca.style.backgroundColor = "#ff4444";
+    peca.style.border = "2px solid #fff";
+    peca.style.boxShadow = "0 0 6px rgba(0,0,0,0.7)";
+    peca.style.transform = "translate(-50%, -50%)";
+    peca.style.zIndex = "1000";
+    peca.style.pointerEvents = "none";
+
+    container.appendChild(peca);
+    pecaTeste.elemento = peca;
+
+    renderizarPecaTeste();
+}
+
+function renderizarPecaTeste() {
+    if (!pecaTeste.elemento) return;
+
+    const casa = tabuleiro.caminho[pecaTeste.posicao];
+    if (!casa) return;
+
+    pecaTeste.elemento.style.left = `${casa.x}%`;
+    pecaTeste.elemento.style.top = `${casa.y}%`;
+}
+
+function moverPecaTeste(passos) {
+    const totalCasas = tabuleiro.caminho.length;
+    const novaPosicao = ((pecaTeste.posicao + passos) % totalCasas + totalCasas) % totalCasas;
+    pecaTeste.posicao = novaPosicao;
+    renderizarPecaTeste();
+    const casa = tabuleiro.caminho[novaPosicao];
+    console.log(`[X5 Debug] Peça movida para posição ${novaPosicao} | Casa ID: ${casa.id} | tipo: ${casa.tipo} | x: ${casa.x}, y: ${casa.y}`);
+}
+
+// Inicializa no navegador
+if (typeof window !== "undefined") {
+    window.moverPecaTeste = moverPecaTeste;
+    window.pecaTeste = pecaTeste;
+    window.tabuleiroX5 = tabuleiro;
+
+    criarPecaTeste();
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "m" || e.key === "M") {
+            e.preventDefault();
+            moverPecaTeste(1);
+        }
+        if (e.key === "n" || e.key === "N") {
+            e.preventDefault();
+            moverPecaTeste(5);
+        }
+    });
+}
 
 const dadosTabuleiroX5 = { tabuleiro, coordenadas };
 
