@@ -898,17 +898,17 @@ body.preview-x5-active #painel-jogador {
 .preview-card {
     position: absolute;
     z-index: 2;
-    min-height: 96px;
-    width: min(170px, 24vw);
+    width: 176px;
+    height: 150px;
     padding: 12px 14px;
     border-radius: 18px;
     background: rgba(255,255,255,0.12);
     border: 2px solid rgba(255,255,255,0.2);
     color: white;
     display: grid;
-    gap: 7px;
     justify-items: center;
     align-content: center;
+    gap: 8px;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 12px 24px rgba(0,0,0,0.22);
     backdrop-filter: blur(4px);
 }
@@ -941,16 +941,26 @@ body.preview-x5-active #painel-jogador {
     right: 1%;
     top: 26%;
     border-color: rgba(181, 122, 255, 0.55);
-    width: min(170px, 24vw);
 }
 
 .preview-emoji {
-    font-size: 2rem;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 1.95rem;
+    line-height: 1;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.18);
 }
 
 .preview-nome {
     font-size: 1.05rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
 }
 
 .preview-dado {
@@ -966,31 +976,36 @@ body.preview-x5-active #painel-jogador {
     box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
-.preview-vermelho .preview-dado {
+.preview-vermelho .preview-dado,
+.preview-vermelho .preview-emoji {
     color: #ff5b5b;
     border-color: #ff5b5b;
     box-shadow: 0 0 0 2px rgba(255,91,91,0.25), 0 0 18px rgba(255,91,91,0.4);
 }
 
-.preview-azul .preview-dado {
+.preview-azul .preview-dado,
+.preview-azul .preview-emoji {
     color: #4d96ff;
     border-color: #4d96ff;
     box-shadow: 0 0 0 2px rgba(77,150,255,0.25), 0 0 18px rgba(77,150,255,0.4);
 }
 
-.preview-verde .preview-dado {
+.preview-verde .preview-dado,
+.preview-verde .preview-emoji {
     color: #49df86;
     border-color: #49df86;
     box-shadow: 0 0 0 2px rgba(73,223,134,0.25), 0 0 18px rgba(73,223,134,0.4);
 }
 
-.preview-amarelo .preview-dado {
+.preview-amarelo .preview-dado,
+.preview-amarelo .preview-emoji {
     color: #ffd84d;
     border-color: #ffd84d;
     box-shadow: 0 0 0 2px rgba(255,216,77,0.25), 0 0 18px rgba(255,216,77,0.4);
 }
 
-.preview-roxo .preview-dado {
+.preview-roxo .preview-dado,
+.preview-roxo .preview-emoji {
     color: #b57aff;
     border-color: #b57aff;
     box-shadow: 0 0 0 2px rgba(181,122,255,0.25), 0 0 18px rgba(181,122,255,0.4);
@@ -999,6 +1014,7 @@ body.preview-x5-active #painel-jogador {
 .preview-status {
     font-size: 0.95rem;
     opacity: 0.8;
+    line-height: 1.2;
 }
 
 .preview-board-shell {
