@@ -2044,6 +2044,7 @@ function atualizarPainelSala(jogadores) {
 
     const seletorTipoDado = document.getElementById("seletor-tipo-dado");
     const selectTipoDado = document.getElementById("select-tipo-dado");
+    const selectModoJogo = document.getElementById("select-modo-jogo");
 
     if (seletorTipoDado) {
         seletorTipoDado.style.display = "block";
@@ -2092,10 +2093,7 @@ btnIniciarPartida.addEventListener("click", () => {
     socket.emit("iniciarPartida", salaAtual);
 });
 
-const selectModoJogo = document.getElementById("select-modo-jogo");
-const selectTipoDado = document.getElementById("select-tipo-dado");
-
-const caminhoPrincipalDebugX5 = [
+const casasExternasDebugX5 = [
     { x: 50.0, y: 84.0 },
     { x: 53.8, y: 80.4 },
     { x: 57.6, y: 76.6 },
@@ -2181,8 +2179,9 @@ function desenharMarcadoresDebugX5() {
     const params = new URLSearchParams(window.location.search);
     const debugX5 = params.get("debugX5") === "1";
     const debugRota = params.get("debugRota") === "1";
+    const debugCasas = params.get("debugCasas") === "1";
 
-    if (!debugX5 && !debugRota) return;
+    if (!debugX5 && !debugRota && !debugCasas) return;
 
     const container = document.getElementById("container-pecas-x5");
     if (!container) return;
@@ -2239,7 +2238,31 @@ function desenharMarcadoresDebugX5() {
         ]
     };
 
-    if (debugX5) {
+    if (debugCasas) {
+        casasExternasDebugX5.forEach((coord, i) => {
+            const marcador = document.createElement("div");
+            marcador.classList.add("marcador-debug-x5");
+            marcador.style.position = "absolute";
+            marcador.style.left = `${coord.x}%`;
+            marcador.style.top = `${coord.y}%`;
+            marcador.style.width = "16px";
+            marcador.style.height = "16px";
+            marcador.style.borderRadius = "50%";
+            marcador.style.border = "2px solid #111";
+            marcador.style.backgroundColor = "rgba(255,255,255,0.95)";
+            marcador.style.color = "#111";
+            marcador.style.display = "flex";
+            marcador.style.alignItems = "center";
+            marcador.style.justifyContent = "center";
+            marcador.style.fontSize = "9px";
+            marcador.style.fontWeight = "700";
+            marcador.style.transform = "translate(-50%, -50%)";
+            marcador.style.zIndex = "1000";
+            marcador.textContent = i + 1;
+            marcador.title = `Casa externa ${i + 1}`;
+            container.appendChild(marcador);
+        });
+    } else if (debugX5) {
         configX5.jogadores.forEach((jogador) => {
             const coords = baseCoords[jogador.id];
             if (!coords) return;
@@ -2264,32 +2287,6 @@ function desenharMarcadoresDebugX5() {
             });
         });
     }
-
-    if (debugX5 && debugRota) {
-        caminhoPrincipalDebugX5.forEach((coord, i) => {
-            const marcador = document.createElement("div");
-            marcador.classList.add("marcador-debug-x5");
-            marcador.style.position = "absolute";
-            marcador.style.left = `${coord.x}%`;
-            marcador.style.top = `${coord.y}%`;
-            marcador.style.width = "16px";
-            marcador.style.height = "16px";
-            marcador.style.borderRadius = "50%";
-            marcador.style.border = "2px solid #111";
-            marcador.style.backgroundColor = "rgba(255,255,255,0.95)";
-            marcador.style.color = "#111";
-            marcador.style.display = "flex";
-            marcador.style.alignItems = "center";
-            marcador.style.justifyContent = "center";
-            marcador.style.fontSize = "9px";
-            marcador.style.fontWeight = "700";
-            marcador.style.transform = "translate(-50%, -50%)";
-            marcador.style.zIndex = "1000";
-            marcador.textContent = i + 1;
-            marcador.title = `Casa ${i + 1} do caminho principal`;
-            container.appendChild(marcador);
-        });
-    }
 }
 
 function removerMarcadoresDebugX5() {
@@ -2297,14 +2294,16 @@ function removerMarcadoresDebugX5() {
 }
 
 
-if (selectModoJogo) {
-    selectModoJogo.addEventListener("change", () => {
+const selectModoJogoEl = document.getElementById("select-modo-jogo");
+
+if (selectModoJogoEl) {
+    selectModoJogoEl.addEventListener("change", () => {
         if (previewX5Ativo) {
             alternarVisualTabuleiro("x5");
             return;
         }
 
-        const modo = selectModoJogo.value;
+        const modo = selectModoJogoEl.value;
         
         // Permite alternar visualmente no seletor de modo mesmo antes de salvar no servidor ou para visualização do host
         alternarVisualTabuleiro(modo);
@@ -2320,14 +2319,16 @@ if (selectModoJogo) {
     });
 }
 
-if (selectTipoDado) {
-    selectTipoDado.addEventListener("change", () => {
+const selectTipoDadoEl = document.getElementById("select-tipo-dado");
+
+if (selectTipoDadoEl) {
+    selectTipoDadoEl.addEventListener("change", () => {
         if (!souHost || !salaAtual) {
-            selectTipoDado.value = tipoDado;
+            selectTipoDadoEl.value = tipoDado;
             return;
         }
 
-        const tipo = selectTipoDado.value;
+        const tipo = selectTipoDadoEl.value;
         tipoDado = tipo;
 
         socket.emit("definirTipoDado", {

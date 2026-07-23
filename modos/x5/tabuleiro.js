@@ -1,7 +1,7 @@
 // Tabuleiro X5 - mapeamento do caminho externo compartilhado
 // As coordenadas estão em porcentagem relativa ao container do tabuleiro.
 
-const caminhoPrincipal = [
+const casasExternas = [
     { x: 50.0, y: 84.0 },
     { x: 53.8, y: 80.4 },
     { x: 57.6, y: 76.6 },
@@ -50,17 +50,18 @@ const caminhoPrincipal = [
 ];
 
 const tabuleiro = {
-    // Caminho principal compartilhado do tabuleiro X5.
-    caminhoPrincipal,
-    caminho: caminhoPrincipal,
+    // Mapa visual das casas externas do tabuleiro X5.
+    caminhoPrincipal: [],
+    caminho: [],
+    casasExternas,
 
-    // Índices de saída para cada jogador, em ordem de movimentação do caminho.
+    // Índices de saída mantidos desativados nesta etapa.
     indicesSaida: {
-        player1: 0,
-        player2: 9,
-        player3: 18,
-        player4: 27,
-        player5: 36
+        player1: null,
+        player2: null,
+        player3: null,
+        player4: null,
+        player5: null
     },
 
     // Retas finais (5 cores) - coordenadas em porcentagem
