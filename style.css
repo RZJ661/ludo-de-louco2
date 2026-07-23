@@ -888,55 +888,60 @@ body.preview-x5-active #painel-jogador {
 }
 
 .preview-x5-grid {
-    display: grid;
-    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(180px, 220px);
-    grid-template-areas:
-        "card-vermelho board card-azul"
-        "card-verde board card-amarelo"
-        "card-roxo board card-roxo-2";
-    gap: 18px 22px;
-    align-items: center;
+    position: relative;
+    width: min(100%, 980px);
+    margin: 0 auto;
+    min-height: 580px;
+    padding: 24px 12px 28px;
 }
 
 .preview-card {
-    min-height: 120px;
-    padding: 16px;
+    position: absolute;
+    z-index: 2;
+    min-height: 96px;
+    width: min(170px, 24vw);
+    padding: 12px 14px;
     border-radius: 18px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.12);
     border: 2px solid rgba(255,255,255,0.2);
     color: white;
     display: grid;
-    gap: 8px;
+    gap: 7px;
     justify-items: center;
     align-content: center;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.07);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 12px 24px rgba(0,0,0,0.22);
+    backdrop-filter: blur(4px);
 }
 
 .preview-vermelho {
-    grid-area: card-vermelho;
+    left: 2%;
+    bottom: 2%;
     border-color: rgba(255, 91, 91, 0.55);
 }
 
 .preview-azul {
-    grid-area: card-azul;
+    left: 2%;
+    top: 20%;
     border-color: rgba(73, 150, 255, 0.55);
 }
 
 .preview-verde {
-    grid-area: card-verde;
+    left: 18%;
+    top: 2%;
     border-color: rgba(73, 223, 134, 0.55);
 }
 
 .preview-amarelo {
-    grid-area: card-amarelo;
+    right: 18%;
+    top: 2%;
     border-color: rgba(255, 222, 87, 0.55);
 }
 
 .preview-roxo {
-    grid-area: card-roxo;
+    right: 1%;
+    top: 26%;
     border-color: rgba(181, 122, 255, 0.55);
-    justify-self: center;
-    width: min(100%, 220px);
+    width: min(170px, 24vw);
 }
 
 .preview-emoji {
@@ -957,7 +962,38 @@ body.preview-x5-active #painel-jogador {
     display: grid;
     place-items: center;
     font-size: 1.35rem;
-    border: 2px solid rgba(0,0,0,0.08);
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.preview-vermelho .preview-dado {
+    color: #ff5b5b;
+    border-color: #ff5b5b;
+    box-shadow: 0 0 0 2px rgba(255,91,91,0.25), 0 0 18px rgba(255,91,91,0.4);
+}
+
+.preview-azul .preview-dado {
+    color: #4d96ff;
+    border-color: #4d96ff;
+    box-shadow: 0 0 0 2px rgba(77,150,255,0.25), 0 0 18px rgba(77,150,255,0.4);
+}
+
+.preview-verde .preview-dado {
+    color: #49df86;
+    border-color: #49df86;
+    box-shadow: 0 0 0 2px rgba(73,223,134,0.25), 0 0 18px rgba(73,223,134,0.4);
+}
+
+.preview-amarelo .preview-dado {
+    color: #ffd84d;
+    border-color: #ffd84d;
+    box-shadow: 0 0 0 2px rgba(255,216,77,0.25), 0 0 18px rgba(255,216,77,0.4);
+}
+
+.preview-roxo .preview-dado {
+    color: #b57aff;
+    border-color: #b57aff;
+    box-shadow: 0 0 0 2px rgba(181,122,255,0.25), 0 0 18px rgba(181,122,255,0.4);
 }
 
 .preview-status {
@@ -966,10 +1002,13 @@ body.preview-x5-active #painel-jogador {
 }
 
 .preview-board-shell {
-    grid-area: board;
+    position: relative;
+    z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: min(100%, 780px);
+    margin: 0 auto;
 }
 
 #tabuleiro-x5 {
@@ -1004,16 +1043,23 @@ body.preview-x5-active #tabuleiro-x5 {
 
 @media (max-width: 900px) {
     .preview-x5-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-            "card-vermelho card-azul"
-            "card-verde card-amarelo"
-            "board board"
-            "card-roxo card-roxo";
+        min-height: auto;
+        padding: 0 0 16px;
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .preview-board-shell {
+        grid-column: 1 / -1;
         margin-top: 6px;
+        order: -1;
+    }
+
+    .preview-card {
+        position: static;
+        width: auto;
+        min-height: 98px;
     }
 }
 
@@ -1024,16 +1070,9 @@ body.preview-x5-active #tabuleiro-x5 {
 
     .preview-x5-grid {
         grid-template-columns: 1fr;
-        grid-template-areas:
-            "card-vermelho"
-            "card-azul"
-            "card-verde"
-            "card-amarelo"
-            "card-roxo"
-            "board";
     }
 
     .preview-card {
-        min-height: 98px;
+        min-height: 96px;
     }
 }
