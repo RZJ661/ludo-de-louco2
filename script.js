@@ -1867,6 +1867,7 @@ if (admMandarGol) {
 
 const telaLobby = document.getElementById("tela-lobby");
 const areaJogo = document.getElementById("area-jogo");
+const previewX5 = document.getElementById("preview-x5");
 const inputNick = document.getElementById("nick");
 const selectAvatar = document.getElementById("avatar");
 const inputCodigoSala = document.getElementById("codigo-sala");
@@ -2094,37 +2095,6 @@ btnIniciarPartida.addEventListener("click", () => {
 const selectModoJogo = document.getElementById("select-modo-jogo");
 const selectTipoDado = document.getElementById("select-tipo-dado");
 
-if (previewX5Ativo) {
-    if (telaLobby) telaLobby.style.display = "none";
-    if (areaJogo) areaJogo.style.display = "flex";
-
-    const tabuleiroClassico = document.getElementById("tabuleiro");
-    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
-
-    if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
-    if (tabuleiroX5) tabuleiroX5.style.display = "block";
-}
-
-// Função centralizada para controlar a alternância visual dos tabuleiros
-function alternarVisualTabuleiro(modo) {
-    const tabuleiroClassico = document.getElementById("tabuleiro");
-    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
-
-    if (modo === "x5") {
-        if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
-        if (tabuleiroX5) {
-            tabuleiroX5.style.display = "block";
-            desenharMarcadoresDebugX5();
-        }
-    } else {
-        if (tabuleiroClassico) tabuleiroClassico.style.display = "grid";
-        if (tabuleiroX5) {
-            tabuleiroX5.style.display = "none";
-            removerMarcadoresDebugX5();
-        }
-    }
-}
-
 const caminhoPrincipalDebugX5 = [
     { x: 50.0, y: 84.0 },
     { x: 53.8, y: 80.4 },
@@ -2172,6 +2142,37 @@ const caminhoPrincipalDebugX5 = [
     { x: 43.2, y: 87.0 },
     { x: 48.6, y: 86.2 }
 ];
+
+if (previewX5Ativo) {
+    if (telaLobby) telaLobby.style.display = "none";
+    if (areaJogo) areaJogo.style.display = "none";
+    if (previewX5) previewX5.classList.add("ativo");
+    document.body.classList.add("preview-x5-active");
+    desenharMarcadoresDebugX5();
+} else {
+    document.body.classList.remove("preview-x5-active");
+    if (previewX5) previewX5.classList.remove("ativo");
+}
+
+// Função centralizada para controlar a alternância visual dos tabuleiros
+function alternarVisualTabuleiro(modo) {
+    const tabuleiroClassico = document.getElementById("tabuleiro");
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+
+    if (modo === "x5") {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
+        if (tabuleiroX5) {
+            tabuleiroX5.style.display = "block";
+            desenharMarcadoresDebugX5();
+        }
+    } else {
+        if (tabuleiroClassico) tabuleiroClassico.style.display = "grid";
+        if (tabuleiroX5) {
+            tabuleiroX5.style.display = "none";
+            removerMarcadoresDebugX5();
+        }
+    }
+}
 
 // Visualização de depuração ativada somente com ?debugX5=1 na URL
 function desenharMarcadoresDebugX5() {
