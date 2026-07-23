@@ -1,3 +1,4 @@
+(() => {
 // Tabuleiro X5 - mapa visual das casas externas compartilhadas.
 // As coordenadas são porcentagens relativas à imagem PNG oficial.
 // Nesta etapa são mapeadas somente as casas brancas. Os corredores coloridos
@@ -110,3 +111,4 @@ if (typeof window !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
     module.exports = dadosTabuleiroX5;
 }
+})();
