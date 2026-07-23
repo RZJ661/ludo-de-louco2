@@ -314,6 +314,71 @@ if (typeof window !== "undefined") {
     });
 }
 
+// === Sistema de Sandbox X5 ===
+// Cria as 20 peças de teste nas bases e gerencia a visibilidade do
+// tabuleiro X5 quando o modo de jogo muda para "x5" em uma sala.
+
+function criarPecasX5() {
+    const container = document.getElementById("container-pecas-x5");
+    if (!container) return;
+
+    // Remove peças anteriores (mantém marcadores de debug)
+    container.querySelectorAll(".peca").forEach(el => el.remove());
+
+    const cores = ["vermelho", "azul", "verde", "amarelo", "roxo"];
+    const pecasPorJogador = 4;
+
+    cores.forEach((cor) => {
+        const bases = tabuleiro.bases[cor];
+        if (!bases) return;
+
+        for (let i = 0; i < pecasPorJogador; i++) {
+            const casa = bases[i];
+            if (!casa) continue;
+
+            const peca = document.createElement("div");
+            peca.classList.add("peca", cor);
+            peca.style.left = `${casa.x}%`;
+            peca.style.top = `${casa.y}%`;
+            peca.style.transform = "translate(-50%, -50%)";
+            peca.dataset.cor = cor;
+            peca.dataset.indice = i;
+
+            container.appendChild(peca);
+        }
+    });
+}
+
+function atualizarVisibilidadeX5() {
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+    if (!tabuleiroX5) return;
+
+    if (tabuleiroX5.style.display === "block") {
+        document.body.classList.add("modo-x5-ativo");
+        criarPecasX5();
+    } else {
+        document.body.classList.remove("modo-x5-ativo");
+    }
+}
+
+// Inicializa no navegador
+if (typeof window !== "undefined") {
+    // Cria as peças iniciamente
+    criarPecasX5();
+
+    // Verifica estado inicial
+    atualizarVisibilidadeX5();
+
+    // Observa mudanças no display do tabuleiro X5
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+    if (tabuleiroX5) {
+        const observer = new MutationObserver(() => {
+            atualizarVisibilidadeX5();
+        });
+        observer.observe(tabuleiroX5, { attributes: true, attributeFilter: ["style"] });
+    }
+}
+
 const dadosTabuleiroX5 = { tabuleiro, coordenadas };
 
 // O mesmo mapa é usado no servidor e na prévia visual do navegador.

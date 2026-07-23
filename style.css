@@ -1102,3 +1102,28 @@ body.preview-x5-active #tabuleiro-x5 {
         min-height: 96px;
     }
 }
+
+/* === Sandbox X5 - Visibilidade do tabuleiro em modo de sala === */
+body.modo-x5-ativo .preview-x5 {
+    display: block;
+}
+
+body.modo-x5-ativo #tabuleiro-x5 {
+    display: block;
+}
+
+body.modo-x5-ativo #tela-lobby {
+    background: transparent;
+    z-index: 1;
+}
+
+body.modo-x5-ativo .caixa-lobby {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+body.modo-x5-ativo .card-jogador[data-jogador="4"] {
+    display: flex !important;
+}
