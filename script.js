@@ -63,6 +63,8 @@ function obterJogadoresMaximos(modoId) {
 
 const nomes = ["Vermelho", "Azul", "Amarelo", "Verde", "Roxo"];
 const classesPainel = ["painel-vermelho", "painel-azul", "painel-amarelo", "painel-verde", "painel-roxo"];
+const paramsUrl = new URLSearchParams(window.location.search);
+const previewX5Ativo = paramsUrl.get("previewX5") === "1";
 
 let modoADM = false;
 let admPublico = false;
@@ -72,7 +74,13 @@ let jogadorAtual = 0;
 let ranking = [];
 let jogadoresFinalizados = [false, false, false, false];
 
-const socket = io();
+const socket = previewX5Ativo ? {
+    emit() {},
+    on() {}
+} : (typeof io !== "undefined" ? io() : {
+    emit() {},
+    on() {}
+});
 
 let salaAtual = null;
 let meuNick = "";
@@ -1876,6 +1884,11 @@ function gerarCodigoSala() {
 }
 
 btnCriarSala.addEventListener("click", () => {
+    if (previewX5Ativo) {
+        mostrarAviso("🧪 Prévia X5 ativada: a visualização do tabuleiro foi habilitada sem criar sala.");
+        return;
+    }
+
     meuNick = inputNick.value.trim() || "Jogador";
     meuAvatar = selectAvatar.value;
     salaAtual = gerarCodigoSala();
@@ -1890,6 +1903,11 @@ btnCriarSala.addEventListener("click", () => {
 });
 
 btnEntrarSala.addEventListener("click", () => {
+    if (previewX5Ativo) {
+        mostrarAviso("🧪 Prévia X5 ativada: a visualização do tabuleiro foi habilitada sem entrar em uma sala.");
+        return;
+    }
+
     meuNick = inputNick.value.trim() || "Jogador";
     meuAvatar = selectAvatar.value;
     const campoCodigo = document.getElementById("codigo-sala");
@@ -2061,6 +2079,11 @@ if (jogadores.length === 1) {
 }
 
 btnIniciarPartida.addEventListener("click", () => {
+    if (previewX5Ativo) {
+        mostrarAviso("🧪 Prévia X5 ativada: a partida não foi iniciada.");
+        return;
+    }
+
     if (!souHost) return;
 
     if (jogadoresDaSala.length < 1) {
@@ -2266,6 +2289,11 @@ function removerMarcadoresDebugX5() {
 
 if (selectModoJogo) {
     selectModoJogo.addEventListener("change", () => {
+        if (previewX5Ativo) {
+            alternarVisualTabuleiro("x5");
+            return;
+        }
+
         const modo = selectModoJogo.value;
         
         // Permite alternar visualmente no seletor de modo mesmo antes de salvar no servidor ou para visualização do host
@@ -2300,6 +2328,12 @@ if (selectTipoDado) {
 }
 
 socket.on("modoJogoAtualizado", (modo) => {
+    if (previewX5Ativo) {
+        modoJogo = "x5";
+        alternarVisualTabuleiro("x5");
+        return;
+    }
+
     modoJogo = modo;
 
     const selectModo = document.getElementById("select-modo-jogo");
