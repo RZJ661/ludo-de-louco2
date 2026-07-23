@@ -1866,6 +1866,7 @@ if (admMandarGol) {
 });
 
 const telaLobby = document.getElementById("tela-lobby");
+const areaJogo = document.getElementById("area-jogo");
 const inputNick = document.getElementById("nick");
 const selectAvatar = document.getElementById("avatar");
 const inputCodigoSala = document.getElementById("codigo-sala");
@@ -1885,7 +1886,6 @@ function gerarCodigoSala() {
 
 btnCriarSala.addEventListener("click", () => {
     if (previewX5Ativo) {
-        mostrarAviso("🧪 Prévia X5 ativada: a visualização do tabuleiro foi habilitada sem criar sala.");
         return;
     }
 
@@ -1904,7 +1904,6 @@ btnCriarSala.addEventListener("click", () => {
 
 btnEntrarSala.addEventListener("click", () => {
     if (previewX5Ativo) {
-        mostrarAviso("🧪 Prévia X5 ativada: a visualização do tabuleiro foi habilitada sem entrar em uma sala.");
         return;
     }
 
@@ -2080,7 +2079,6 @@ if (jogadores.length === 1) {
 
 btnIniciarPartida.addEventListener("click", () => {
     if (previewX5Ativo) {
-        mostrarAviso("🧪 Prévia X5 ativada: a partida não foi iniciada.");
         return;
     }
 
@@ -2095,6 +2093,17 @@ btnIniciarPartida.addEventListener("click", () => {
 
 const selectModoJogo = document.getElementById("select-modo-jogo");
 const selectTipoDado = document.getElementById("select-tipo-dado");
+
+if (previewX5Ativo) {
+    if (telaLobby) telaLobby.style.display = "none";
+    if (areaJogo) areaJogo.style.display = "flex";
+
+    const tabuleiroClassico = document.getElementById("tabuleiro");
+    const tabuleiroX5 = document.getElementById("tabuleiro-x5");
+
+    if (tabuleiroClassico) tabuleiroClassico.style.display = "none";
+    if (tabuleiroX5) tabuleiroX5.style.display = "block";
+}
 
 // Função centralizada para controlar a alternância visual dos tabuleiros
 function alternarVisualTabuleiro(modo) {
