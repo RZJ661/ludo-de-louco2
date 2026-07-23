@@ -2180,8 +2180,9 @@ function desenharMarcadoresDebugX5() {
     const debugX5 = params.get("debugX5") === "1";
     const debugRota = params.get("debugRota") === "1";
     const debugCasas = params.get("debugCasas") === "1";
+    const debugBases = params.get("debugBases") === "1";
 
-    if (!debugX5 && !debugRota && !debugCasas) return;
+    if (!debugX5 && !debugRota && !debugCasas && !debugBases) return;
 
     const container = document.getElementById("container-pecas-x5");
     if (!container) return;
@@ -2245,24 +2246,20 @@ function desenharMarcadoresDebugX5() {
             marcador.style.position = "absolute";
             marcador.style.left = `${coord.x}%`;
             marcador.style.top = `${coord.y}%`;
-            marcador.style.width = "16px";
-            marcador.style.height = "16px";
+            marcador.style.width = "10px";
+            marcador.style.height = "10px";
             marcador.style.borderRadius = "50%";
-            marcador.style.border = "2px solid #111";
-            marcador.style.backgroundColor = "rgba(255,255,255,0.95)";
-            marcador.style.color = "#111";
-            marcador.style.display = "flex";
-            marcador.style.alignItems = "center";
-            marcador.style.justifyContent = "center";
-            marcador.style.fontSize = "9px";
-            marcador.style.fontWeight = "700";
+            marcador.style.border = "1px solid rgba(17, 17, 17, 0.65)";
+            marcador.style.backgroundColor = "rgba(255, 255, 255, 0.95)";
+            marcador.style.boxShadow = "inset 0 0 0 1px rgba(17, 17, 17, 0.15)";
             marcador.style.transform = "translate(-50%, -50%)";
             marcador.style.zIndex = "1000";
-            marcador.textContent = i + 1;
             marcador.title = `Casa externa ${i + 1}`;
             container.appendChild(marcador);
         });
-    } else if (debugX5) {
+    }
+
+    if (debugBases) {
         configX5.jogadores.forEach((jogador) => {
             const coords = baseCoords[jogador.id];
             if (!coords) return;
