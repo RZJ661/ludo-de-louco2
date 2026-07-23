@@ -914,32 +914,38 @@ body.preview-x5-active #painel-jogador {
 }
 
 .preview-vermelho {
-    left: 2%;
-    bottom: 2%;
+    left: 50%;
+    top: 100%;
+    margin-top: 30px;
+    transform: translateX(-50%);
     border-color: rgba(255, 91, 91, 0.55);
 }
 
 .preview-azul {
-    left: 2%;
-    top: 20%;
+    left: 8%;
+    top: 56%;
+    transform: translateX(-40%);
     border-color: rgba(73, 150, 255, 0.55);
 }
 
 .preview-verde {
     left: 18%;
     top: 2%;
+    transform: translateX(-50%);
     border-color: rgba(73, 223, 134, 0.55);
 }
 
 .preview-amarelo {
     right: 18%;
     top: 2%;
+    transform: translateX(50%);
     border-color: rgba(255, 222, 87, 0.55);
 }
 
 .preview-roxo {
-    right: 1%;
-    top: 26%;
+    right: 8%;
+    top: 56%;
+    transform: translateX(40%);
     border-color: rgba(181, 122, 255, 0.55);
 }
 
@@ -981,6 +987,10 @@ body.preview-x5-active #painel-jogador {
     color: #ff5b5b;
     border-color: #ff5b5b;
     box-shadow: 0 0 0 2px rgba(255,91,91,0.25), 0 0 18px rgba(255,91,91,0.4);
+}
+
+.preview-vermelho .preview-dado {
+    margin-top: 2px;
 }
 
 .preview-azul .preview-dado,
