@@ -2093,12 +2093,63 @@ function alternarVisualTabuleiro(modo) {
     }
 }
 
+const caminhoPrincipalDebugX5 = [
+    { x: 50.0, y: 84.0 },
+    { x: 53.8, y: 80.4 },
+    { x: 57.6, y: 76.6 },
+    { x: 61.4, y: 72.6 },
+    { x: 65.2, y: 68.6 },
+    { x: 69.0, y: 64.4 },
+    { x: 72.8, y: 60.0 },
+    { x: 76.2, y: 55.4 },
+    { x: 79.5, y: 50.6 },
+    { x: 82.4, y: 45.8 },
+    { x: 85.0, y: 40.8 },
+    { x: 87.4, y: 35.4 },
+    { x: 89.2, y: 29.8 },
+    { x: 90.6, y: 24.0 },
+    { x: 91.2, y: 18.2 },
+    { x: 90.8, y: 12.8 },
+    { x: 88.8, y: 8.6 },
+    { x: 85.0, y: 5.4 },
+    { x: 80.2, y: 3.2 },
+    { x: 74.8, y: 2.4 },
+    { x: 69.4, y: 2.4 },
+    { x: 63.8, y: 2.8 },
+    { x: 58.2, y: 3.6 },
+    { x: 52.6, y: 4.8 },
+    { x: 47.0, y: 6.4 },
+    { x: 41.4, y: 8.4 },
+    { x: 35.8, y: 10.8 },
+    { x: 30.2, y: 13.6 },
+    { x: 24.8, y: 17.0 },
+    { x: 20.0, y: 21.2 },
+    { x: 16.0, y: 26.0 },
+    { x: 12.8, y: 31.2 },
+    { x: 10.8, y: 36.8 },
+    { x: 9.6, y: 42.4 },
+    { x: 9.2, y: 48.2 },
+    { x: 9.8, y: 54.0 },
+    { x: 11.4, y: 60.0 },
+    { x: 14.0, y: 66.0 },
+    { x: 17.8, y: 72.0 },
+    { x: 22.2, y: 77.0 },
+    { x: 27.2, y: 80.8 },
+    { x: 32.4, y: 83.8 },
+    { x: 37.8, y: 85.8 },
+    { x: 43.2, y: 87.0 },
+    { x: 48.6, y: 86.2 }
+];
+
 // Visualização de depuração ativada somente com ?debugX5=1 na URL
 function desenharMarcadoresDebugX5() {
     removerMarcadoresDebugX5();
     
     const params = new URLSearchParams(window.location.search);
-    if (params.get("debugX5") !== "1") return;
+    const debugX5 = params.get("debugX5") === "1";
+    const debugRota = params.get("debugRota") === "1";
+
+    if (!debugX5 && !debugRota) return;
 
     const container = document.getElementById("container-pecas-x5");
     if (!container) return;
@@ -2155,29 +2206,57 @@ function desenharMarcadoresDebugX5() {
         ]
     };
 
-    configX5.jogadores.forEach((jogador) => {
-        const coords = baseCoords[jogador.id];
-        if (!coords) return;
+    if (debugX5) {
+        configX5.jogadores.forEach((jogador) => {
+            const coords = baseCoords[jogador.id];
+            if (!coords) return;
 
-        const corCss = mapaCoresCss[jogador.cor] || "white";
+            const corCss = mapaCoresCss[jogador.cor] || "white";
 
-        coords.forEach((coord, i) => {
+            coords.forEach((coord, i) => {
+                const marcador = document.createElement("div");
+                marcador.classList.add("marcador-debug-x5");
+                marcador.style.position = "absolute";
+                marcador.style.left = `${coord.x}%`;
+                marcador.style.top = `${coord.y}%`;
+                marcador.style.width = "12px";
+                marcador.style.height = "12px";
+                marcador.style.borderRadius = "50%";
+                marcador.style.border = "2px solid white";
+                marcador.style.backgroundColor = corCss;
+                marcador.style.transform = "translate(-50%, -50%)";
+                marcador.style.zIndex = "999";
+                marcador.title = `${jogador.id} (${jogador.cor}) - Base ${i + 1}`;
+                container.appendChild(marcador);
+            });
+        });
+    }
+
+    if (debugX5 && debugRota) {
+        caminhoPrincipalDebugX5.forEach((coord, i) => {
             const marcador = document.createElement("div");
             marcador.classList.add("marcador-debug-x5");
             marcador.style.position = "absolute";
             marcador.style.left = `${coord.x}%`;
             marcador.style.top = `${coord.y}%`;
-            marcador.style.width = "12px";
-            marcador.style.height = "12px";
+            marcador.style.width = "16px";
+            marcador.style.height = "16px";
             marcador.style.borderRadius = "50%";
-            marcador.style.border = "2px solid white";
-            marcador.style.backgroundColor = corCss;
+            marcador.style.border = "2px solid #111";
+            marcador.style.backgroundColor = "rgba(255,255,255,0.95)";
+            marcador.style.color = "#111";
+            marcador.style.display = "flex";
+            marcador.style.alignItems = "center";
+            marcador.style.justifyContent = "center";
+            marcador.style.fontSize = "9px";
+            marcador.style.fontWeight = "700";
             marcador.style.transform = "translate(-50%, -50%)";
-            marcador.style.zIndex = "999";
-            marcador.title = `${jogador.id} (${jogador.cor}) - Base ${i + 1}`;
+            marcador.style.zIndex = "1000";
+            marcador.textContent = i + 1;
+            marcador.title = `Casa ${i + 1} do caminho principal`;
             container.appendChild(marcador);
         });
-    });
+    }
 }
 
 function removerMarcadoresDebugX5() {
