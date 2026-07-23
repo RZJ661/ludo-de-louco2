@@ -253,7 +253,7 @@ const pecaTeste = {
 };
 
 function criarPecaTeste() {
-    const container = document.getElementById("container-pecas-x5");
+    const container = document.getElementById("container-pecas-x5-sandbox");
     if (!container) return;
 
     const peca = document.createElement("div");
@@ -319,7 +319,7 @@ if (typeof window !== "undefined") {
 // tabuleiro X5 quando o modo de jogo muda para "x5" em uma sala.
 
 function criarPecasX5() {
-    const container = document.getElementById("container-pecas-x5");
+    const container = document.getElementById("container-pecas-x5-sandbox");
     if (!container) return;
 
     // Remove peças anteriores (mantém marcadores de debug)
@@ -376,6 +376,19 @@ if (typeof window !== "undefined") {
             atualizarVisibilidadeX5();
         });
         observer.observe(tabuleiroX5, { attributes: true, attributeFilter: ["style"] });
+    }
+
+    // Seletor de modo X5 (isolado da interface clássica)
+    const selectModoX5 = document.getElementById("select-modo-x5");
+    if (selectModoX5) {
+        selectModoX5.addEventListener("change", () => {
+            const modo = selectModoX5.value;
+            if (modo === "x5") {
+                document.body.classList.add("modo-x5-ativo");
+            } else {
+                document.body.classList.remove("modo-x5-ativo");
+            }
+        });
     }
 }
 

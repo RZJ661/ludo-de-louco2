@@ -1103,27 +1103,118 @@ body.preview-x5-active #tabuleiro-x5 {
     }
 }
 
-/* === Sandbox X5 - Visibilidade do tabuleiro em modo de sala === */
-body.modo-x5-ativo .preview-x5 {
+/* === Sandbox X5 - Interface isolada === */
+
+/* Interface X5 oculta por padrão */
+.interface-x5 {
+    display: none;
+}
+
+/* Mostra a interface X5 quando o modo X5 está ativo (fora do preview) */
+body.modo-x5-ativo:not(.preview-x5-active) .interface-x5 {
     display: block;
 }
 
-body.modo-x5-ativo #tabuleiro-x5 {
+/* Esconde todos os elementos do lobby clássico quando X5 está ativo (fora do preview) */
+body.modo-x5-ativo:not(.preview-x5-active) #tela-lobby,
+body.modo-x5-ativo:not(.preview-x5-active) #area-jogo,
+body.modo-x5-ativo:not(.preview-x5-active) .controles,
+body.modo-x5-ativo:not(.preview-x5-active) #painel-jogador,
+body.modo-x5-ativo:not(.preview-x5-active) #preview-x5 {
+    display: none !important;
+}
+
+/* Header da interface X5 */
+.x5-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: rgba(6, 23, 39, 0.85);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.x5-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #f7f8ff;
+}
+
+.x5-header-controles {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.x5-header-controles select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.45);
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Layout da área X5 */
+.x5-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.x5-coluna-players {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Container do tabuleiro X5 */
+.x5-tabuleiro-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tabuleiro-x5-sandbox {
+    position: relative;
+    display: inline-block;
+    max-width: 780px;
+    width: min(100%, 780px);
+}
+
+#img-tabuleiro-x5-sandbox {
+    width: 100%;
+    height: auto;
     display: block;
+    border-radius: 16px;
+    object-fit: contain;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
 }
 
-body.modo-x5-ativo #tela-lobby {
-    background: transparent;
-    z-index: 1;
+#container-pecas-x5-sandbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-body.modo-x5-ativo .caixa-lobby {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-}
+@media (max-width: 1050px) {
+    .x5-area {
+        flex-direction: column;
+    }
 
-body.modo-x5-ativo .card-jogador[data-jogador="4"] {
-    display: flex !important;
+    .x5-coluna-players {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
