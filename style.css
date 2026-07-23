@@ -1207,6 +1207,11 @@ body.modo-x5-ativo:not(.preview-x5-active) #preview-x5 {
     pointer-events: none;
 }
 
+/* Protege o painel Roxo do X5 contra script.js que esconde o primeiro data-jogador="4" */
+.interface-x5 .card-jogador[data-jogador="4"] {
+    display: flex !important;
+}
+
 @media (max-width: 1050px) {
     .x5-area {
         flex-direction: column;

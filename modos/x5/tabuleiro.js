@@ -46,38 +46,43 @@ function criarRetaFinal(rotacao) {
 // nos círculos desenhados no tabuleiro X5.
 // As coordenadas são porcentagens relativas à imagem do tabuleiro.
 const coordenadas = {
+    // VERMELHO (player1) - base na parte inferior do tabuleiro
     player1: {
         base: [
-            { x: 48.0, y: 83.0 }, { x: 52.0, y: 83.0 }, { x: 50.0, y: 79.0 },
-            { x: 46.0, y: 87.0 }, { x: 54.0, y: 87.0 }
+            { x: 50.0, y: 78.0 }, { x: 47.0, y: 83.0 }, { x: 53.0, y: 83.0 },
+            { x: 44.0, y: 88.0 }, { x: 56.0, y: 88.0 }
         ],
         caminho: []
     },
+    // AZUL (player2) - base no lado esquerdo
     player2: {
         base: [
-            { x: 12.0, y: 57.0 }, { x: 16.0, y: 61.0 }, { x: 14.0, y: 65.0 },
-            { x: 10.0, y: 63.0 }, { x: 18.0, y: 59.0 }
+            { x: 8.0, y: 58.0 }, { x: 13.0, y: 55.0 }, { x: 18.0, y: 58.0 },
+            { x: 11.0, y: 62.0 }, { x: 16.0, y: 62.0 }
         ],
         caminho: []
     },
+    // VERDE (player3) - base no canto superior esquerdo
     player3: {
         base: [
-            { x: 18.0, y: 17.0 }, { x: 22.0, y: 13.0 }, { x: 26.0, y: 17.0 },
-            { x: 20.0, y: 21.0 }, { x: 24.0, y: 21.0 }
+            { x: 20.0, y: 12.0 }, { x: 17.0, y: 17.0 }, { x: 23.0, y: 17.0 },
+            { x: 14.0, y: 22.0 }, { x: 20.0, y: 22.0 }
         ],
         caminho: []
     },
+    // AMARELO (player4) - base no canto superior direito
     player4: {
         base: [
-            { x: 74.0, y: 17.0 }, { x: 78.0, y: 13.0 }, { x: 82.0, y: 17.0 },
-            { x: 76.0, y: 21.0 }, { x: 80.0, y: 21.0 }
+            { x: 80.0, y: 12.0 }, { x: 77.0, y: 17.0 }, { x: 83.0, y: 17.0 },
+            { x: 74.0, y: 22.0 }, { x: 80.0, y: 22.0 }
         ],
         caminho: []
     },
+    // ROXO (player5) - base no lado direito
     player5: {
         base: [
-            { x: 86.0, y: 57.0 }, { x: 90.0, y: 61.0 }, { x: 94.0, y: 59.0 },
-            { x: 88.0, y: 65.0 }, { x: 92.0, y: 63.0 }
+            { x: 92.0, y: 58.0 }, { x: 87.0, y: 55.0 }, { x: 82.0, y: 58.0 },
+            { x: 89.0, y: 62.0 }, { x: 94.0, y: 62.0 }
         ],
         caminho: []
     }
@@ -245,86 +250,14 @@ const tabuleiro = {
     casasSeguras
 };
 
-// === Sistema de Movimentação de Teste (debug) ===
-// Este sistema valida o caminho externo do tabuleiro X5.
-// Será removido após validação.
-
-const pecaTeste = {
-    posicao: 0,
-    elemento: null
-};
-
-function criarPecaTeste() {
-    const container = document.getElementById("container-pecas-x5-sandbox");
-    if (!container) return;
-
-    const peca = document.createElement("div");
-    peca.id = "peca-teste-x5";
-    peca.style.position = "absolute";
-    peca.style.width = "20px";
-    peca.style.height = "20px";
-    peca.style.borderRadius = "50%";
-    peca.style.backgroundColor = "#ff4444";
-    peca.style.border = "2px solid #fff";
-    peca.style.boxShadow = "0 0 6px rgba(0,0,0,0.7)";
-    peca.style.transform = "translate(-50%, -50%)";
-    peca.style.zIndex = "1000";
-    peca.style.pointerEvents = "none";
-
-    container.appendChild(peca);
-    pecaTeste.elemento = peca;
-
-    renderizarPecaTeste();
-}
-
-function renderizarPecaTeste() {
-    if (!pecaTeste.elemento) return;
-
-    const casa = tabuleiro.caminho[pecaTeste.posicao];
-    if (!casa) return;
-
-    pecaTeste.elemento.style.left = `${casa.x}%`;
-    pecaTeste.elemento.style.top = `${casa.y}%`;
-}
-
-function moverPecaTeste(passos) {
-    const totalCasas = tabuleiro.caminho.length;
-    const novaPosicao = ((pecaTeste.posicao + passos) % totalCasas + totalCasas) % totalCasas;
-    pecaTeste.posicao = novaPosicao;
-    renderizarPecaTeste();
-    const casa = tabuleiro.caminho[novaPosicao];
-    console.log(`[X5 Debug] Peça movida para posição ${novaPosicao} | Casa ID: ${casa.id} | tipo: ${casa.tipo} | x: ${casa.x}, y: ${casa.y}`);
-}
-
-// Inicializa no navegador
-if (typeof window !== "undefined") {
-    window.moverPecaTeste = moverPecaTeste;
-    window.pecaTeste = pecaTeste;
-    window.tabuleiroX5 = tabuleiro;
-
-    criarPecaTeste();
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "m" || e.key === "M") {
-            e.preventDefault();
-            moverPecaTeste(1);
-        }
-        if (e.key === "n" || e.key === "N") {
-            e.preventDefault();
-            moverPecaTeste(5);
-        }
-    });
-}
-
 // === Sistema de Sandbox X5 ===
-// Cria as 20 peças de teste nas bases e gerencia a visibilidade do
-// tabuleiro X5 quando o modo de jogo muda para "x5" em uma sala.
+// Gerencia a visibilidade do tabuleiro X5 e as peças nas bases.
 
 function criarPecasX5() {
     const container = document.getElementById("container-pecas-x5-sandbox");
     if (!container) return;
 
-    // Remove peças anteriores (mantém marcadores de debug)
+    // Remove peças anteriores
     container.querySelectorAll(".peca").forEach(el => el.remove());
 
     const cores = ["vermelho", "azul", "verde", "amarelo", "roxo"];
@@ -365,10 +298,7 @@ function atualizarVisibilidadeX5() {
 
 // Inicializa no navegador
 if (typeof window !== "undefined") {
-    // Cria as peças iniciamente
     criarPecasX5();
-
-    // Verifica estado inicial
     atualizarVisibilidadeX5();
 
     // Observa mudanças no display do tabuleiro X5
