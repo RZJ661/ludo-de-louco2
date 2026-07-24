@@ -261,7 +261,7 @@ function criarPecasX5() {
     container.querySelectorAll(".peca").forEach(el => el.remove());
 
     const cores = ["vermelho", "azul", "verde", "amarelo", "roxo"];
-    const pecasPorJogador = 4;
+    const pecasPorJogador = 5;
 
     cores.forEach((cor) => {
         const bases = tabuleiro.bases[cor];

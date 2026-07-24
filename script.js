@@ -316,6 +316,47 @@ function pegarTempoAFK(jogador) {
 
 const GOL = 56;
 
+// === Helpers para modo X5 ===
+function obterGOL() {
+    if (modoJogo === "x5") return 66;
+    return GOL;
+}
+
+function obterLimiteCaminho() {
+    if (modoJogo === "x5") return 60;
+    return 50;
+}
+
+const coresJogadores = ["vermelho", "azul", "verde", "amarelo", "roxo"];
+
+function atualizarPecasDOMX5() {
+    const container = document.getElementById("container-pecas-x5-sandbox");
+    if (!container) return;
+
+    coresJogadores.forEach((cor, jogador) => {
+        pecasDOM[jogador] = [];
+        const pecas = container.querySelectorAll(`.peca[data-cor="${cor}"]`);
+        pecas.forEach((peca, indice) => {
+            pecasDOM[jogador][indice] = peca;
+        });
+    });
+}
+
+// Event delegation para cliques nas peças do sandbox X5
+const containerSandbox = document.getElementById("container-pecas-x5-sandbox");
+if (containerSandbox) {
+    containerSandbox.addEventListener("click", (e) => {
+        const peca = e.target.closest(".peca");
+        if (!peca) return;
+        const cor = peca.dataset.cor;
+        const indice = Number(peca.dataset.indice);
+        const jogador = coresJogadores.indexOf(cor);
+        if (jogador >= 0) {
+            clicarNaPeca(jogador, indice);
+        }
+    });
+}
+
 const facesDado = {
     1: "⚀",
     2: "⚁",
@@ -851,7 +892,7 @@ async function usarDadoNaPeca(jogador, pecaIndex, dadoIndex) {
     await moverPeca(jogador, pecaIndex, dadoUsado);
 
     const capturou = verificarCaptura(jogador, pecaIndex);
-    const fezGol = progresso[jogador][pecaIndex] === GOL;
+    const fezGol = progresso[jogador][pecaIndex] === obterGOL();
 
     if (fezGol && !golsFeitos[jogador][pecaIndex]) {
     golsFeitos[jogador][pecaIndex] = true;
@@ -869,7 +910,7 @@ async function usarDadoNaPeca(jogador, pecaIndex, dadoIndex) {
 function jogadasValidas(jogador) {
     const validas = [];
 
-    for (let p = 0; p < 4; p++) {
+    for (let p = 0; p < progresso[jogador].length; p++) {
         for (let d = 0; d < dadosPendentes.length; d++) {
             if (jogadaValidaComDado(jogador, p, dadosPendentes[d])) {
                 validas.push(p);
@@ -885,13 +926,13 @@ function jogadaValidaComDado(jogador, pecaIndex, dado) {
     const prog = progresso[jogador][pecaIndex];
 
     if (golsFeitos[jogador][pecaIndex]) return false;
-    if (prog === GOL) return false;
+    if (prog === obterGOL()) return false;
 
     if (prog === -1) {
         return dado === 6;
     }
 
-    return prog + dado <= GOL;
+    return prog + dado <= obterGOL();
 }
 
 function tirarDaBase(jogador, pecaIndex) {
@@ -932,7 +973,7 @@ async function moverPeca(jogador, pecaIndex, passos) {
     const peca = pecasDOM[jogador][pecaIndex];
     peca.classList.remove("andando");
 
- if (progresso[jogador][pecaIndex] === GOL) {
+ if (progresso[jogador][pecaIndex] === obterGOL()) {
 
     if (!golsFeitos[jogador].every(g => g === true)) {
 
@@ -948,6 +989,57 @@ async function moverPeca(jogador, pecaIndex, passos) {
 function renderizarPeca(jogador, pecaIndex) {
     const prog = progresso[jogador][pecaIndex];
     const peca = pecasDOM[jogador][pecaIndex];
+
+    if (!peca) return;
+
+    // X5 mode: use X5 board data for positioning (percentage-based)
+    if (modoJogo === "x5") {
+        const x5tabuleiro = window.X5_TABULEIRO?.tabuleiro;
+        if (!x5tabuleiro) return;
+
+        const cor = coresJogadores[jogador];
+        const playerId = `player${jogador + 1}`;
+        const gol = obterGOL();
+        const limiteCaminho = obterLimiteCaminho();
+
+        let coordenada;
+
+        if (prog === -1 || prog === gol) {
+            coordenada = x5tabuleiro.bases[cor]?.[pecaIndex];
+        } else if (prog <= limiteCaminho) {
+            const startIndex = jogador * 12;
+            coordenada = x5tabuleiro.casasExternas[(startIndex + prog) % 60];
+        } else if (prog >= limiteCaminho + 1 && prog <= gol - 1) {
+            const indiceReta = prog - limiteCaminho - 1;
+            coordenada = x5tabuleiro.retasFinaisPorJogador[playerId]?.[indiceReta];
+        }
+
+        if (coordenada) {
+            peca.style.left = `${coordenada.x}%`;
+            peca.style.top = `${coordenada.y}%`;
+            peca.style.transform = "translate(-50%, -50%)";
+        }
+
+        if (prog === gol && !peca.dataset.coroada) {
+            peca.dataset.coroada = "true";
+
+            const coroa = document.createElement("div");
+            coroa.textContent = "👑";
+            coroa.style.position = "absolute";
+            coroa.style.top = "-18px";
+            coroa.style.left = "50%";
+            coroa.style.transform = "translateX(-50%)";
+            coroa.style.fontSize = "14px";
+            coroa.style.pointerEvents = "none";
+
+            peca.style.position = "relative";
+            peca.appendChild(coroa);
+        }
+
+        return;
+    }
+
+    // Classic mode rendering (mantido inalterado)
     const casaAntiga = peca.parentElement;
 
     if (prog === -1) {
@@ -1135,7 +1227,7 @@ function limparDestaquePecas() {
 function destacarPecasValidas(jogador, jogadas) {
     limparDestaquePecas();
 
-    for (let p = 0; p < 4; p++) {
+    for (let p = 0; p < pecasDOM[jogador].length; p++) {
         const peca = pecasDOM[jogador][p];
         if (!peca) continue;
 
@@ -1148,9 +1240,12 @@ function destacarPecasValidas(jogador, jogadas) {
 }
 
 function verificarCaptura(jogador, pecaIndex) {
+    // X5: captura não implementada ainda, evita crash em indicesSaida/caminho
+    if (modoJogo === "x5") return false;
+
     const prog = progresso[jogador][pecaIndex];
 
-    if (prog > 50) return false;
+    if (prog > obterLimiteCaminho()) return false;
 
     const posicaoGlobal = (indicesSaida[jogador] + prog) % caminho.length;
 
@@ -1161,10 +1256,10 @@ function verificarCaptura(jogador, pecaIndex) {
 
     let capturou = false;
 
-for (let outroJogador = 0; outroJogador < 4; outroJogador++) {
+for (let outroJogador = 0; outroJogador < obterJogadoresMaximos(modoJogo); outroJogador++) {
         if (outroJogador === jogador) continue;
 
-        for (let outraPeca = 0; outraPeca < 4; outraPeca++) {
+        for (let outraPeca = 0; outraPeca < progresso[outroJogador].length; outraPeca++) {
             const progOutro = progresso[outroJogador][outraPeca];
 
             if (progOutro < 0 || progOutro > 50) continue;
@@ -1550,7 +1645,7 @@ function verificarVitoria(jogador) {
         dado.classList.remove("rolando");
     });
 
-    if (ranking.length >= 3) {
+    if (ranking.length >= obterJogadoresMaximos(modoJogo) - 1) {
         passarTurno();
         return;
     }
@@ -1720,6 +1815,7 @@ function esperar(ms) {
 
 criarTabuleiro();
 criarPecas();
+atualizarPecasDOMX5();
 atualizarPainel();
 info.textContent = `Vez de ${nomes[jogadorAtual]}.`;
 iniciarTimerAFK();
@@ -1844,14 +1940,14 @@ const admMandarGol = document.getElementById("adm-mandar-gol");
 if (admMandarGol) {
     admMandarGol.addEventListener("click", () => {
 
-        const pecaIndex = progresso[jogadorAtual].findIndex(p => p >= 0 && p < GOL);
+        const pecaIndex = progresso[jogadorAtual].findIndex(p => p >= 0 && p < obterGOL());
 
         if (pecaIndex === -1) {
             alert("Nenhuma peça disponível para mandar ao gol!");
             return;
         }
 
-        progresso[jogadorAtual][pecaIndex] = GOL;
+        progresso[jogadorAtual][pecaIndex] = obterGOL();
         golsFeitos[jogadorAtual][pecaIndex] = true;
 
         tocarSomAleatorio(sonsGol);
@@ -2356,7 +2452,7 @@ function aplicarEstadoOnline(estado) {
     dadosPendentes = estado.dadosPendentes || [];
     bonusGiros = estado.bonusGiros || 0;
     seisSeguidos = estado.seisSeguidos || 0;
-turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
+turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0, 0];
     modoJogo = estado.modoJogo || modoJogo;
     tipoDado = estado.tipoDado || tipoDado;
 
@@ -2367,8 +2463,9 @@ turnosPresoBase = estado.turnosPresoBase || [0, 0, 0, 0];
         }
     });
 
-    for (let j = 0; j < 4; j++) {
-        for (let p = 0; p < 4; p++) {
+    const totalJogadoresRender = obterJogadoresMaximos(modoJogo);
+    for (let j = 0; j < totalJogadoresRender; j++) {
+        for (let p = 0; p < obterModoJogo(modoJogo).pecasPorJogador; p++) {
             renderizarPeca(j, p);
         }
     }
