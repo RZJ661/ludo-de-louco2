@@ -282,6 +282,11 @@ function criarPecasX5() {
             container.appendChild(peca);
         }
     });
+
+    // Atualiza o array pecasDOM do sistema principal para reconhecer as peças X5
+    if (typeof window.atualizarPecasDOMX5 === "function") {
+        window.atualizarPecasDOMX5();
+    }
 }
 
 function atualizarVisibilidadeX5() {

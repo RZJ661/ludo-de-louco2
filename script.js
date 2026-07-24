@@ -342,6 +342,9 @@ function atualizarPecasDOMX5() {
     });
 }
 
+// Expõe globalmente para ser chamada pelo tabuleiro X5 após criar/recriar peças
+window.atualizarPecasDOMX5 = atualizarPecasDOMX5;
+
 // Event delegation para cliques nas peças do sandbox X5
 const containerSandbox = document.getElementById("container-pecas-x5-sandbox");
 if (containerSandbox) {
